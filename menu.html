@@ -63,7 +63,7 @@
       <div class="flex items-center justify-between gap-3 mb-2.5">
         <div class="flex items-center gap-2.5">
           <div class="w-11 h-11 rounded-full p-0.5 bg-white shadow-md border-2 border-[#0c4a7e]/25 flex items-center justify-center shrink-0">
-            <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
+            <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[#0c4a7e] text-2xl\'>coffee</span>';">
           </div>
           <div>
             <h1 class="text-base font-extrabold text-[#0c4a7e] leading-tight tracking-tight">Azure Bean Coffee</h1>
@@ -117,35 +117,35 @@
         <button onclick="setCustCategory('all')" data-cat="all"
           class="cat-chip active-cat px-3 py-1.5 rounded-full font-bold border border-primary whitespace-nowrap transition-all shadow-xs flex items-center gap-1.5">
           <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-primary/25 flex items-center justify-center">
-            <img src="assets/img/icons/cat_all.svg" alt="Semua" class="w-full h-full object-contain">
+            <img src="assets/img/icons/cat_all.svg" alt="Semua" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[13px] text-primary\'>grid_view</span>';">
           </span>
           <span>Semua</span>
         </button>
         <button onclick="setCustCategory('CAT-01')" data-cat="CAT-01"
           class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
           <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-primary/25 flex items-center justify-center">
-            <img src="assets/img/icons/cat_coffee.jpg" alt="Kopi" class="w-full h-full object-cover rounded-full">
+            <img src="assets/img/icons/cat_coffee.jpg" alt="Kopi" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[13px] text-[#0c4a7e]\'>local_cafe</span>';">
           </span>
           <span>Kopi</span>
         </button>
         <button onclick="setCustCategory('CAT-02')" data-cat="CAT-02"
           class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
           <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-emerald-600/25 flex items-center justify-center">
-            <img src="assets/img/icons/cat_tea.jpg" alt="Non-Kopi" class="w-full h-full object-cover rounded-full">
+            <img src="assets/img/icons/cat_tea.jpg" alt="Non-Kopi" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[13px] text-emerald-600\'>emoji_food_beverage</span>';">
           </span>
           <span>Non-Kopi</span>
         </button>
         <button onclick="setCustCategory('CAT-03')" data-cat="CAT-03"
           class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
           <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-amber-600/25 flex items-center justify-center">
-            <img src="assets/img/icons/cat_food.jpg" alt="Makanan" class="w-full h-full object-cover rounded-full">
+            <img src="assets/img/icons/cat_food.jpg" alt="Makanan" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[13px] text-amber-600\'>bakery_dining</span>';">
           </span>
           <span>Makanan</span>
         </button>
         <button onclick="setCustCategory('CAT-04')" data-cat="CAT-04"
           class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
           <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-blue-400/35 flex items-center justify-center">
-            <img src="assets/img/icons/cat_drink.svg" alt="Minuman" class="w-full h-full object-contain">
+            <img src="assets/img/icons/cat_drink.svg" alt="Minuman" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'material-symbols-outlined text-[13px] text-blue-500\'>local_drink</span>';">
           </span>
           <span>Minuman</span>
         </button>
@@ -291,12 +291,35 @@
     });
 
     // ═══════════════════════════════════════════════════════ PRODUCTS FETCH VIA DB (JSON)
+    const FALLBACK_PRODUCTS = [
+      { "id": "PRD-001", "category_id": "CAT-01", "sku": "CF-ESP-01", "name": "Iced Americano", "price": 28000, "stock": 50, "image_url": "assets/img/products/product_20261101_091055_fb5fb4a0.jpeg", "is_available": true },
+      { "id": "PRD-002", "category_id": "CAT-01", "sku": "CF-LAT-02", "name": "Caramel Macchiato", "price": 45000, "stock": 30, "image_url": "assets/img/products/product_20261101_092725_469f9513.jpeg", "is_available": true },
+      { "id": "PRD-003", "category_id": "CAT-01", "sku": "CF-FLT-03", "name": "V60 Pour Over", "price": 38000, "stock": 20, "image_url": "assets/img/products/product_20261101_093005_756bbb29.jpeg", "is_available": true },
+      { "id": "PRD-007", "category_id": "CAT-02", "sku": "NC-CHO-02", "name": "Dark Chocolate", "price": 38000, "stock": 40, "image_url": "assets/img/products/product_20261101_093816_1dbd122d.jpeg", "is_available": true },
+      { "id": "PRD-008", "category_id": "CAT-02", "sku": "NC-CHA-03", "name": "Chai Tea Latte", "price": 35000, "stock": 30, "image_url": "assets/img/products/product_20261101_093828_d59af1df.jpeg", "is_available": true },
+      { "id": "PRD-009", "category_id": "CAT-03", "sku": "FK-CRS-01", "name": "Almond Croissant", "price": 35000, "stock": 15, "image_url": "assets/img/products/product_20261101_093840_ea88ff03.jpeg", "is_available": true },
+      { "id": "PRD-010", "category_id": "CAT-03", "sku": "FK-BNR-02", "name": "Banana Bread", "price": 28000, "stock": 10, "image_url": "assets/img/products/product_20261101_093852_5a264587.jpeg", "is_available": true },
+      { "id": "PRD-011", "category_id": "CAT-03", "sku": "FK-SND-03", "name": "Tuna Sandwich", "price": 45000, "stock": 8, "image_url": "assets/img/products/product_20261101_093920_e27fda66.jpeg", "is_available": true },
+      { "id": "PRD-012", "category_id": "CAT-04", "sku": "MD-ICT-01", "name": "Mineral Water", "price": 18000, "stock": 60, "image_url": "assets/img/products/product_20261101_094237_90981980.jpeg", "is_available": true },
+      { "id": "PRD-013", "category_id": "CAT-04", "sku": "MD-LMN-02", "name": "Sparkling Water", "price": 22000, "stock": 45, "image_url": "assets/img/products/product_20261101_094258_894b8bae.jpeg", "is_available": true }
+    ];
+
     function loadCustomerProducts() {
       try {
-        custProducts = DB.getAvailableProducts();
+        if (typeof DB !== 'undefined' && typeof DB.getAvailableProducts === 'function') {
+          custProducts = DB.getAvailableProducts();
+        } else {
+          const raw = localStorage.getItem('pos_products');
+          if (raw) {
+            custProducts = JSON.parse(raw).filter(p => p.is_available);
+          } else {
+            custProducts = FALLBACK_PRODUCTS;
+          }
+        }
         renderCustomerMenu(custProducts);
       } catch (e) {
-        showMenuError('Gagal memuat menu. Silakan refresh halaman.');
+        custProducts = FALLBACK_PRODUCTS;
+        renderCustomerMenu(custProducts);
       }
     }
 
@@ -312,13 +335,15 @@
         return;
       }
 
+      const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230c4a7e' opacity='0.35'><path d='M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z'/></svg>";
+
       grid.innerHTML = products.map(p => {
         const cartItem = custCart.find(c => c.product_id === p.id);
         const qty = cartItem ? cartItem.quantity : 0;
         const isPlaceholder = !p.image_url || p.image_url.includes('placeholder') || p.image_url.endsWith('.svg');
         const imgHtml = isPlaceholder
-          ? `<img src="${p.image_url || 'assets/img/coffee_placeholder.svg'}" alt="${p.name}" class="w-12 h-12 object-contain opacity-70">`
-          : `<img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.src='assets/img/coffee_placeholder.svg'; this.className='w-12 h-12 object-contain opacity-70'">`;
+          ? `<img src="${p.image_url || fallbackSvg}" alt="${p.name}" class="w-12 h-12 object-contain opacity-70" onerror="this.onerror=null; this.src='${fallbackSvg}';">`
+          : `<img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${fallbackSvg}'; this.className='w-12 h-12 object-contain opacity-60';">`;
 
         // Action button / Counter
         const actionBtn = qty > 0
@@ -559,13 +584,25 @@
       };
 
       try {
-        const result = DB.createOrder(payload);
+        let result;
+        if (typeof DB !== 'undefined' && typeof DB.createOrder === 'function') {
+          result = DB.createOrder(payload);
+        } else {
+          // Fallback direct localStorage
+          const orders = JSON.parse(localStorage.getItem('pos_orders') || '[]');
+          const newId = 'ORD-' + Date.now();
+          const orderData = { id: newId, ...payload, created_at: new Date().toISOString().replace('T', ' ').substring(0, 19) };
+          orders.unshift(orderData);
+          localStorage.setItem('pos_orders', JSON.stringify(orders));
+          result = { success: true, data: orderData };
+        }
 
         if (result.success) {
           closeCartSheet();
           showDigitalReceipt(result.data, tableName, customerInput);
-          // Refresh daftar menu agar stok yang baru berkurang ter-update
-          custProducts = DB.getAvailableProducts();
+          if (typeof DB !== 'undefined' && typeof DB.getAvailableProducts === 'function') {
+            custProducts = DB.getAvailableProducts();
+          }
           filterCustomerMenu();
         } else {
           alert('Gagal mengirim pesanan: ' + (result.message || 'Coba lagi.'));
