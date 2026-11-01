@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Bean — Antrean & Pesanan Meja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0c4a7e","on-primary": "#ffffff","primary-container": "#135c9a",
+            "secondary": "#082c4f","tertiary": "#8c5532","coffee": "#6b4028","crema": "#e0b27e",
+            "error": "#ba1a1a","surface": "#f4f7fb","on-surface": "#0c1e2e","on-surface-variant": "#4a5d6e",
+            "surface-container-lowest": "#ffffff","surface-container-low": "#edf3f8",
+            "surface-container": "#e1ebf3","surface-container-high": "#d4e2ed",
+            "surface-container-highest": "#c7d7e4","outline": "#6b8093","outline-variant": "#c9d8e5",
+          },
+          fontFamily: { "sans": ["Inter", "sans-serif"] },
+          fontSize: {
+            "headline-sm": ["17px", { lineHeight: "22px", fontWeight: "600" }],
+            "body-md": ["15px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            "label-lg": ["15px", { lineHeight: "20px", fontWeight: "600" }],
+            "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "13px", fontWeight: "500" }],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="assets/js/db.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f7fb; overscroll-behavior: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #c9d8e5; border-radius: 4px; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .order-card { animation: slideUp 0.18s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @media print {
+      body * { visibility: hidden; }
+      #kitchen-ticket-modal, #kitchen-ticket-modal * { visibility: visible; }
+      #kitchen-ticket-modal { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
+
+<!-- FLOATING NOTIFIKASI PESANAN MASUK -->
+<div id="new-order-toast" class="fixed top-4 right-6 z-50 transform translate-y-[-150%] transition-transform duration-300 pointer-events-none max-w-sm">
+  <div class="bg-amber-500 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-amber-300 pointer-events-auto">
+    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined filled text-2xl text-white animate-bounce">notifications_active</span>
+    </div>
+    <div class="flex-1">
+      <p class="font-bold text-xs" id="toast-title">Pesanan Mandiri Baru!</p>
+      <p class="text-[11px] opacity-95" id="toast-msg">Meja 03 memesan 2 item</p>
+    </div>
+    <button onclick="dismissToast()" class="w-7 h-7 rounded-lg hover:bg-white/20 flex items-center justify-center">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR NAV -->
+<aside class="w-20 h-screen bg-white shadow-[1px_0_0_#c9d8e5] flex flex-col items-center py-4 gap-1 z-50 shrink-0">
+  <!-- Delftware Azure Bean Emblem Logo -->
+  <div class="w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 flex items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean Coffee">
+    <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
+  </div>
+  <nav class="flex flex-col items-center gap-1 w-full px-2">
+    <a href="index.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">point_of_sale</span>
+      <span class="text-[10px] font-medium">Kasir</span>
+    </a>
+    <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">grid_view</span>
+      <span class="text-[10px] font-medium">Katalog</span>
+    </a>
+    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer relative">
+      <span class="material-symbols-outlined filled text-xl">receipt_long</span>
+      <span class="text-[10px] font-semibold">Antrean</span>
+      <span id="sidebar-pending-badge" class="hidden absolute top-1 right-2 bg-amber-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+    </a>
+    <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">bar_chart</span>
+      <span class="text-[10px] font-medium">Statistik</span>
+    </a>
+  </nav>
+  <!-- Bottom: User & Logout -->
+  <div class="mt-auto flex flex-col items-center gap-2 w-full px-2 pb-2">
+    <button onclick="handleLogout()" title="Keluar / Logout"
+      class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-xl">logout</span>
+    </button>
+    <div id="user-avatar" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase"
+      title="Kasir">K1</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- Header -->
+  <header class="bg-white border-b border-outline-variant px-6 py-3.5 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-headline-sm font-bold text-on-surface">Antrean & Riwayat Pesanan</h1>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            Live Sync
+          </span>
+        </div>
+        <p class="text-body-sm text-on-surface-variant">Pantau pesanan meja pelanggan & proses transaksi kasir</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Tombol Suara Notifikasi -->
+      <button onclick="toggleAudio()" id="audio-toggle-btn"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-on-surface transition-colors"
+        title="Aktifkan nada dering saat ada pesanan meja baru">
+        <span class="material-symbols-outlined text-base text-primary" id="audio-icon">volume_up</span>
+        <span id="audio-text">Suara Aktif</span>
+      </button>
+
+      <!-- Counter Perlu Tindakan -->
+      <div class="text-right pl-3 border-l border-outline-variant">
+        <p class="text-[11px] text-on-surface-variant leading-tight">Perlu Tindakan Kasir</p>
+        <p class="text-sm font-extrabold text-amber-600" id="header-pending-count">0 pesanan</p>
+      </div>
+
+      <button onclick="loadOrders()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-white font-semibold text-xs hover:bg-primary-container transition-colors shadow-sm">
+        <span class="material-symbols-outlined text-sm">refresh</span>
+        Segarkan
+      </button>
+    </div>
+  </header>
+
+  <!-- Filter & Workflow Tabs Bar -->
+  <div class="bg-white border-b border-outline-variant px-6 py-2.5 flex items-center justify-between gap-4 shrink-0 overflow-x-auto">
+    <!-- Status Tabs -->
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button onclick="setStatusTab('all')" data-tab="all" class="status-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-primary text-white shadow-xs transition-all">
+        Semua (<span id="count-all">0</span>)
+      </button>
+      <button onclick="setStatusTab('pending')" data-tab="pending" class="status-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        <span>Menunggu Kasir</span>
+        <span id="count-pending" class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+      <button onclick="setStatusTab('processing')" data-tab="processing" class="status-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        <span>Sedang Diracik</span>
+        <span id="count-processing" class="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+      <button onclick="setStatusTab('ready')" data-tab="ready" class="status-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Siap Diantar</span>
+        <span id="count-ready" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+      <button onclick="setStatusTab('completed')" data-tab="completed" class="status-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+        <span>Selesai</span>
+        <span id="count-completed" class="bg-gray-100 text-gray-700 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+    </div>
+
+    <!-- Search + Filter Dropdown -->
+    <div class="flex items-center gap-2 shrink-0">
+      <div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-xl w-44 focus-within:w-56 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary transition-all">
+        <span class="material-symbols-outlined text-on-surface-variant text-base">search</span>
+        <input type="text" id="order-search" placeholder="Cari nota/meja/nama..." oninput="filterOrders()"
+          class="bg-transparent border-none outline-none flex-1 text-xs text-on-surface placeholder-on-surface-variant p-0">
+      </div>
+
+      <select id="source-filter" onchange="filterOrders()" class="bg-surface-container text-on-surface rounded-xl pl-3 pr-8 py-1.5 border-none outline-none text-xs font-semibold cursor-pointer hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary">
+        <option value="">Semua Sumber</option>
+        <option value="self_order">📱 Pesanan Meja (Self-Order)</option>
+        <option value="pos">🖥️ Kasir Langsung</option>
+      </select>
+
+      <select id="method-filter" onchange="filterOrders()" class="bg-surface-container text-on-surface rounded-xl pl-3 pr-8 py-1.5 border-none outline-none text-xs font-semibold cursor-pointer hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary">
+        <option value="">Semua Metode</option>
+        <option value="Bayar di Kasir">🛎️ Bayar di Kasir (Pending)</option>
+        <option value="QRIS">📱 QRIS</option>
+        <option value="Tunai">💵 Tunai</option>
+        <option value="Kartu">💳 Kartu</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Orders Grid (items-start mencegah card meregang vertikal secara berlebihan) -->
+  <div class="flex-1 overflow-y-auto p-5">
+    <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+      <div class="col-span-3 flex flex-col items-center justify-center py-16 text-on-surface-variant">
+        <span class="material-symbols-outlined text-5xl opacity-20">receipt_long</span>
+        <p class="text-body-md mt-3 font-medium">Memuat antrean pesanan...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ MODAL TERIMA PEMBAYARAN KASIR -->
+<div id="pay-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePayModal()"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-scaleUp">
+    <div class="bg-amber-500 text-white p-5 flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full inline-block mb-1">Kasir: Terima Pembayaran</span>
+        <h3 class="text-base font-bold" id="pay-modal-title">Meja 03</h3>
+        <p class="text-xs opacity-90 font-mono" id="pay-modal-order-id">ORD-XXXX</p>
+      </div>
+      <button onclick="closePayModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30">
+        <span class="material-symbols-outlined text-white text-base">close</span>
+      </button>
+    </div>
+
+    <div class="p-5 flex flex-col gap-4">
+      <div class="bg-surface-container-low p-4 rounded-2xl flex items-center justify-between border border-outline-variant/60">
+        <div>
+          <p class="text-xs text-on-surface-variant font-medium">Total Tagihan Meja</p>
+          <p class="text-2xl font-extrabold text-primary tabular-nums" id="pay-modal-total">Rp 0</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[11px] text-on-surface-variant" id="pay-modal-customer">Pelanggan</p>
+          <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Menunggu Pembayaran</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-on-surface mb-2">Metode Pembayaran yang Diterima Kasir</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="selectPayCashierMethod('Tunai')" id="btn-pay-tunai"
+            class="py-2.5 px-2 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex flex-col items-center gap-1 transition-all">
+            <span class="material-symbols-outlined text-xl">payments</span>
+            <span>Tunai</span>
+          </button>
+          <button type="button" onclick="selectPayCashierMethod('QRIS')" id="btn-pay-qris"
+            class="py-2.5 px-2 rounded-xl border-2 border-transparent bg-surface-container text-on-surface font-semibold text-xs flex flex-col items-center gap-1 hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+            <span>QRIS Kasir</span>
+          </button>
+          <button type="button" onclick="selectPayCashierMethod('Kartu')" id="btn-pay-kartu"
+            class="py-2.5 px-2 rounded-xl border-2 border-transparent bg-surface-container text-on-surface font-semibold text-xs flex flex-col items-center gap-1 hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined text-xl">credit_card</span>
+            <span>Debit / Kartu</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="cash-calculator-section" class="flex flex-col gap-2.5">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Uang Diterima dari Tamu</label>
+          <div class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded-xl border border-outline-variant focus-within:border-primary focus-within:bg-white">
+            <span class="text-xs font-bold text-on-surface">Rp</span>
+            <input type="number" id="pay-cash-input" placeholder="0" oninput="calculateCashChange()"
+              class="bg-transparent border-none outline-none flex-1 text-sm font-bold text-on-surface p-0 focus:ring-0">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5 text-xs">
+          <button type="button" onclick="setQuickCash('exact')" class="py-1.5 rounded-lg bg-surface-container font-semibold hover:bg-surface-container-high">Uang Pas</button>
+          <button type="button" onclick="setQuickCash(50000)" class="py-1.5 rounded-lg bg-surface-container font-semibold hover:bg-surface-container-high">50.000</button>
+          <button type="button" onclick="setQuickCash(100000)" class="py-1.5 rounded-lg bg-surface-container font-semibold hover:bg-surface-container-high">100.000</button>
+          <button type="button" onclick="setQuickCash(200000)" class="py-1.5 rounded-lg bg-surface-container font-semibold hover:bg-surface-container-high">200.000</button>
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+          <span class="text-xs font-medium text-emerald-800">Kembalian:</span>
+          <span class="text-sm font-bold text-emerald-700 tabular-nums" id="pay-cash-change">Rp 0</span>
+        </div>
+      </div>
+
+      <button onclick="submitCashierPayment()"
+        class="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/30 active:scale-98 transition-all">
+        <span class="material-symbols-outlined text-lg">verified</span>
+        <span>Konfirmasi Lunas & Kirim ke Dapur</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MODAL TIKET DAPUR -->
+<div id="kitchen-ticket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm no-print" onclick="closeTicketModal()"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-xs mx-4 p-5 flex flex-col gap-3 font-mono text-xs animate-scaleUp">
+    <div class="flex items-center justify-between pb-2 border-b border-dashed border-gray-300 no-print">
+      <span class="font-sans font-bold text-on-surface text-sm">Tiket Barista / Koki</span>
+      <button onclick="closeTicketModal()" class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <div id="ticket-print-area" class="flex flex-col gap-2 pt-1 text-on-surface">
+      <div class="text-center border-b border-dashed border-gray-400 pb-2">
+        <h2 class="font-bold text-base tracking-wide">AZURE BEAN COFFEE</h2>
+        <p class="text-[11px] uppercase tracking-wider text-gray-500">Tiket Pesanan Meja</p>
+      </div>
+
+      <div class="flex justify-between text-[11px]">
+        <span>No. Nota:</span>
+        <span class="font-bold" id="ticket-order-id">ORD-XXX</span>
+      </div>
+      <div class="flex justify-between text-[11px]">
+        <span>Waktu:</span>
+        <span id="ticket-time">12:00</span>
+      </div>
+      <div class="flex justify-between text-[11px] border-b border-dashed border-gray-400 pb-2">
+        <span>Lokasi / Meja:</span>
+        <span class="font-bold text-sm text-primary" id="ticket-table">MEJA 03</span>
+      </div>
+
+      <div class="flex flex-col gap-1.5 py-1" id="ticket-items"></div>
+
+      <div class="border-t border-dashed border-gray-400 pt-2 text-[10px] text-center text-gray-500">
+        *** Segera sajikan setelah pesanan siap ***
+      </div>
+    </div>
+
+    <div class="flex gap-2 pt-2 no-print">
+      <button onclick="window.print()" class="flex-1 h-10 rounded-xl bg-primary text-white font-sans font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+        <span class="material-symbols-outlined text-base">print</span>
+        Cetak Tiket
+      </button>
+      <button onclick="closeTicketModal()" class="h-10 px-4 rounded-xl border border-outline-variant font-sans font-semibold text-xs">
+        Tutup
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MODAL DETAIL NOTA -->
+<div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+  <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeDetail()"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div class="bg-primary px-6 py-4 text-white flex items-center justify-between">
+      <div>
+        <p class="text-label-sm opacity-75">Nomor Nota Transaksi</p>
+        <h3 class="text-base font-bold" id="detail-order-id"></h3>
+      </div>
+      <button onclick="closeDetail()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+        <span class="material-symbols-outlined text-white text-base">close</span>
+      </button>
+    </div>
+    <div class="px-6 py-4 flex flex-col gap-4" id="detail-body"></div>
+    <div class="px-6 pb-5 flex gap-2">
+      <button onclick="printKitchenTicket(currentDetailOrderId)" class="flex-1 h-10 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5">
+        <span class="material-symbols-outlined text-base">print</span>
+        Cetak Tiket
+      </button>
+      <button onclick="closeDetail()" class="flex-1 h-10 rounded-xl bg-primary text-white font-semibold text-xs">
+        Tutup
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let allOrders = [];
+let currentFilterTab = 'all';
+let currentActivePayOrderId = null;
+let currentDetailOrderId = null;
+let audioEnabled = true;
+let lastKnownOrderCount = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  currentUser = DB.requireAuth();
+  if (!currentUser) return;
+
+  document.getElementById('user-avatar').textContent = currentUser.name.slice(0, 2).toUpperCase();
+  document.getElementById('user-avatar').title = `${currentUser.name} (${currentUser.role})`;
+
+  loadOrders();
+
+  // Watcher Realtime antartab
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'pos_orders') onOrdersChanged();
+  });
+  window.addEventListener('pos_orders_updated', () => loadOrders());
+  window.addEventListener('pos_order_created', (e) => {
+    handleIncomingOrderAlert(e.detail);
+    loadOrders();
+  });
+
+  setInterval(checkNewOrdersBackground, 3000);
+});
+
+function handleLogout() {
+  if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.name}?`)) {
+    DB.logout();
+  }
+}
+
+// ═══════════════════════════════════════════════════════ RESOLVERS DATA KONSISTEN
+function resolveTableNumber(o) {
+  if (o.table_number && o.table_number.trim() && o.table_number !== 'Meja' && o.table_number !== 'Kasir Langsung') {
+    return o.table_number;
+  }
+  const text = `${o.customer_name || ''} ${o.cashier_name || ''}`;
+  const m = text.match(/Meja\s*\d+|Meja\s*VIP|Take\s*Away/i);
+  if (m) return m[0];
+  if (o.order_type === 'self_order' || (o.cashier_name && o.cashier_name.includes('Self-Order'))) {
+    return 'Meja Tamu';
+  }
+  return 'Kasir Langsung';
+}
+
+function resolveCustomerName(o) {
+  let name = o.customer_name || 'Pelanggan Umum';
+  // Bersihkan "(Meja 03)" agar tidak redundan dengan badge meja
+  name = name.replace(/\s*\((?:Meja|Take\s*Away|VIP)[^)]*\)/i, '').trim();
+  return name || 'Pelanggan';
+}
+
+function resolveOrderStatus(o) {
+  if (o.payment_method === 'Bayar di Kasir' && o.payment_status !== 'paid') return 'pending';
+  if (o.order_status) return o.order_status;
+  return 'completed';
+}
+
+// ═══════════════════════════════════════════════════════ AUDIO & REALTIME CHIME
+function playDingDong() {
+  if (!audioEnabled) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(659.25, now);
+    gain1.gain.setValueAtTime(0.2, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.35);
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(830.6, now + 0.18);
+    gain2.gain.setValueAtTime(0.22, now + 0.18);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.18);
+    osc2.stop(now + 0.65);
+  } catch(e) {}
+}
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const icon = document.getElementById('audio-icon');
+  const text = document.getElementById('audio-text');
+  if (audioEnabled) {
+    icon.textContent = 'volume_up';
+    text.textContent = 'Suara Aktif';
+    playDingDong();
+  } else {
+    icon.textContent = 'volume_off';
+    text.textContent = 'Bisu';
+  }
+}
+
+function checkNewOrdersBackground() {
+  const currentOrders = DB.getOrders();
+  if (lastKnownOrderCount > 0 && currentOrders.length > lastKnownOrderCount) {
+    handleIncomingOrderAlert(currentOrders[0]);
+    loadOrders();
+  }
+  lastKnownOrderCount = currentOrders.length;
+}
+
+function onOrdersChanged() {
+  const orders = DB.getOrders();
+  if (orders.length > lastKnownOrderCount) {
+    handleIncomingOrderAlert(orders[0]);
+  }
+  lastKnownOrderCount = orders.length;
+  loadOrders();
+}
+
+function handleIncomingOrderAlert(order) {
+  playDingDong();
+  const toast = document.getElementById('new-order-toast');
+  const table = resolveTableNumber(order);
+  document.getElementById('toast-title').textContent = `🔔 Pesanan Baru: ${table}`;
+  document.getElementById('toast-msg').textContent = `${resolveCustomerName(order)} · ${formatRp(order.total_amount)} (${order.payment_method})`;
+  toast.classList.remove('translate-y-[-150%]');
+  setTimeout(dismissToast, 6000);
+}
+
+function dismissToast() {
+  document.getElementById('new-order-toast').classList.add('translate-y-[-150%]');
+}
+
+// ═══════════════════════════════════════════════════════ LOAD & RENDER
+function loadOrders() {
+  const rawOrders = DB.getOrders();
+  // Sanitasi & sinkronisasi data agar konsisten
+  allOrders = rawOrders.map(o => ({
+    ...o,
+    table_number: resolveTableNumber(o),
+    order_status: resolveOrderStatus(o),
+    customer_display_name: resolveCustomerName(o)
+  }));
+
+  lastKnownOrderCount = allOrders.length;
+  updateCounters(allOrders);
+  filterOrders();
+}
+
+function setStatusTab(tab) {
+  currentFilterTab = tab;
+  document.querySelectorAll('.status-tab').forEach(b => {
+    if (b.dataset.tab === tab) {
+      b.className = 'status-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-primary text-white shadow-xs transition-all';
+    } else {
+      b.className = 'status-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5';
+    }
+  });
+  filterOrders();
+}
+
+function updateCounters(orders) {
+  const pendingCount = orders.filter(o => o.order_status === 'pending' || (o.payment_method === 'Bayar di Kasir' && o.payment_status !== 'paid')).length;
+  const processingCount = orders.filter(o => o.order_status === 'processing').length;
+  const readyCount = orders.filter(o => o.order_status === 'ready').length;
+  const completedCount = orders.filter(o => o.order_status === 'completed').length;
+
+  document.getElementById('count-all').textContent = orders.length;
+  document.getElementById('count-pending').textContent = pendingCount;
+  document.getElementById('count-processing').textContent = processingCount;
+  document.getElementById('count-ready').textContent = readyCount;
+  document.getElementById('count-completed').textContent = completedCount;
+
+  document.getElementById('header-pending-count').textContent = pendingCount + ' pesanan';
+
+  const sideBadge = document.getElementById('sidebar-pending-badge');
+  if (pendingCount > 0) {
+    sideBadge.textContent = pendingCount;
+    sideBadge.classList.remove('hidden');
+  } else {
+    sideBadge.classList.add('hidden');
+  }
+}
+
+function filterOrders() {
+  const q = document.getElementById('order-search').value.toLowerCase().trim();
+  const method = document.getElementById('method-filter').value;
+  const source = document.getElementById('source-filter').value;
+
+  const filtered = allOrders.filter(o => {
+    // 1. Tab Status Filter
+    if (currentFilterTab === 'pending' && !(o.order_status === 'pending' || (o.payment_method === 'Bayar di Kasir' && o.payment_status !== 'paid'))) return false;
+    if (currentFilterTab === 'processing' && o.order_status !== 'processing') return false;
+    if (currentFilterTab === 'ready' && o.order_status !== 'ready') return false;
+    if (currentFilterTab === 'completed' && o.order_status !== 'completed') return false;
+
+    // 2. Source Filter (self_order vs pos)
+    if (source) {
+      const isSelf = (o.order_type === 'self_order') || (o.cashier_name && o.cashier_name.includes('Self-Order'));
+      if (source === 'self_order' && !isSelf) return false;
+      if (source === 'pos' && isSelf) return false;
+    }
+
+    // 3. Payment Method
+    if (method && o.payment_method !== method) return false;
+
+    // 4. Search Query
+    if (q) {
+      const matchId = (o.id || '').toLowerCase().includes(q);
+      const matchCust = (o.customer_name || '').toLowerCase().includes(q);
+      const matchTable = (o.table_number || '').toLowerCase().includes(q);
+      if (!matchId && !matchCust && !matchTable) return false;
+    }
+
+    return true;
+  });
+
+  renderOrders(filtered);
+}
+
+// ═══════════════════════════════════════════════════════ RENDER CARDS
+function renderOrders(orders) {
+  const grid = document.getElementById('orders-grid');
+  if (!orders.length) {
+    grid.innerHTML = `
+      <div class="col-span-3 flex flex-col items-center justify-center py-16 text-on-surface-variant">
+        <span class="material-symbols-outlined text-5xl opacity-20">search_off</span>
+        <p class="text-body-md mt-2 font-medium">Tidak ada pesanan pada filter ini.</p>
+        <p class="text-body-sm opacity-60">Pesanan baru akan muncul secara otomatis di sini.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = orders.map(o => {
+    const isSelfOrder = (o.order_type === 'self_order') || (o.cashier_name && o.cashier_name.includes('Self-Order'));
+    const isUnpaid = o.order_status === 'pending' || (o.payment_method === 'Bayar di Kasir' && o.payment_status !== 'paid');
+    const time = o.created_at ? new Date(o.created_at.replace(' ', 'T')).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '—';
+    const totalItems = (o.items || []).reduce((s, i) => s + i.quantity, 0);
+
+    const tableName = o.table_number || resolveTableNumber(o);
+    const custName = o.customer_display_name || resolveCustomerName(o);
+
+    // 1. Source Badge (Meja vs Kasir)
+    const sourceBadge = isSelfOrder
+      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+           <span class="material-symbols-outlined text-sm">table_restaurant</span>
+           <span>${tableName}</span>
+         </span>`
+      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+           <span class="material-symbols-outlined text-sm">point_of_sale</span>
+           <span>Kasir Langsung</span>
+         </span>`;
+
+    // 2. Status Badge
+    let statusBadge = '';
+    let cardBorder = 'border-outline-variant/60';
+    let cardBgHeader = 'bg-white';
+
+    if (isUnpaid) {
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+        <span>Belum Bayar</span>
+      </span>`;
+      cardBorder = 'border-amber-400 ring-2 ring-amber-400/20';
+      cardBgHeader = 'bg-amber-50/50';
+    } else if (o.order_status === 'processing') {
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span>
+        <span>Sedang Diracik</span>
+      </span>`;
+      cardBorder = 'border-blue-300';
+      cardBgHeader = 'bg-blue-50/30';
+    } else if (o.order_status === 'ready') {
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span class="material-symbols-outlined text-xs">room_service</span>
+        <span>Siap Diantar</span>
+      </span>`;
+      cardBorder = 'border-emerald-300';
+      cardBgHeader = 'bg-emerald-50/30';
+    } else if (o.order_status === 'cancelled') {
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+        <span class="material-symbols-outlined text-xs">cancel</span>
+        <span>Dibatalkan</span>
+      </span>`;
+      cardBorder = 'border-red-200';
+    } else {
+      // Completed / Selesai
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+        <span class="material-symbols-outlined text-xs">done_all</span>
+        <span>Selesai</span>
+      </span>`;
+    }
+
+    // 3. Action Buttons
+    let actionButtons = '';
+    if (isUnpaid && o.order_status !== 'cancelled') {
+      actionButtons = `
+        <button onclick="event.stopPropagation(); openPayModal('${o.id}')"
+          class="flex-1 h-9 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-base">payments</span>
+          <span>Terima Pembayaran Kasir</span>
+        </button>
+        <button onclick="event.stopPropagation(); handleCancelOrder('${o.id}')" title="Tolak Pesanan"
+          class="h-9 px-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      `;
+    } else if (o.order_status === 'processing') {
+      actionButtons = `
+        <button onclick="event.stopPropagation(); changeStatus('${o.id}', 'ready')"
+          class="flex-1 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-base">room_service</span>
+          <span>Tandai Siap Diantar</span>
+        </button>
+        <button onclick="event.stopPropagation(); printKitchenTicket('${o.id}')" title="Cetak Tiket Dapur"
+          class="h-9 px-3 rounded-xl border border-outline-variant hover:bg-surface-container text-on-surface text-xs font-semibold flex items-center gap-1 transition-colors">
+          <span class="material-symbols-outlined text-sm">print</span>
+          <span>Tiket</span>
+        </button>
+      `;
+    } else if (o.order_status === 'ready') {
+      actionButtons = `
+        <button onclick="event.stopPropagation(); changeStatus('${o.id}', 'completed')"
+          class="w-full h-9 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          <span>Selesaikan Pesanan (Sudah Disajikan)</span>
+        </button>
+      `;
+    } else {
+      actionButtons = `
+        <button onclick="event.stopPropagation(); openDetail('${o.id}')"
+          class="w-full h-8 rounded-xl bg-white hover:bg-surface-container border border-outline-variant/60 text-on-surface-variant hover:text-on-surface text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+          <span class="material-symbols-outlined text-sm">receipt_long</span>
+          <span>Lihat Rincian Nota</span>
+        </button>
+      `;
+    }
+
+    // 4. Items rendering
+    const itemsHtml = (o.items || []).map(i => `
+      <div class="flex items-start justify-between gap-2 text-xs">
+        <div class="flex items-start gap-2 min-w-0">
+          <span class="inline-flex items-center justify-center bg-surface-container text-on-surface font-bold text-[11px] px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+            ${i.quantity}x
+          </span>
+          <div class="min-w-0">
+            <p class="font-medium text-on-surface truncate">${i.name}</p>
+            ${i.notes ? `
+              <p class="text-[11px] text-amber-900 bg-amber-50 border border-amber-200/80 rounded px-1.5 py-0.5 mt-0.5 inline-block font-medium">
+                ✏️ ${i.notes}
+              </p>
+            ` : ''}
+          </div>
+        </div>
+        <span class="font-semibold text-on-surface tabular-nums shrink-0">${formatRp(i.subtotal)}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div onclick="openDetail('${o.id}')" class="order-card bg-white rounded-2xl border ${cardBorder} shadow-xs hover:shadow-md cursor-pointer transition-all overflow-hidden flex flex-col">
+        
+        <!-- Header Kartu -->
+        <div class="p-3.5 pb-3 border-b border-outline-variant/40 ${cardBgHeader}">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            ${sourceBadge}
+            ${statusBadge}
+          </div>
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="text-sm font-bold text-on-surface truncate">👤 ${custName}</h3>
+            <span class="text-[11px] font-mono text-on-surface-variant shrink-0 font-medium">${o.id} · ${time}</span>
+          </div>
+        </div>
+
+        <!-- Body Item List -->
+        <div class="p-3.5 py-3 flex-1 flex flex-col gap-2.5">
+          <div class="space-y-2">
+            ${itemsHtml}
+          </div>
+
+          <!-- Total Info -->
+          <div class="pt-2.5 mt-auto border-t border-dashed border-outline-variant/60 flex items-center justify-between">
+            <div class="flex items-center gap-1 text-xs text-on-surface-variant">
+              <span>${totalItems} item</span>
+              <span>·</span>
+              <span class="font-semibold text-on-surface">${o.payment_method}</span>
+            </div>
+            <span class="text-base font-extrabold text-primary tabular-nums">${formatRp(o.total_amount)}</span>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-2.5 bg-[#faf9fb] border-t border-outline-variant/30 flex items-center gap-2">
+          ${actionButtons}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════ ACTION HANDLERS
+function changeStatus(orderId, newStatus) {
+  const res = DB.updateOrderStatus(orderId, newStatus);
+  if (res.success) {
+    loadOrders();
+  } else {
+    alert(res.message);
+  }
+}
+
+function handleCancelOrder(orderId) {
+  const reason = prompt('Masukkan alasan pembatalan pesanan ini:', 'Pelanggan membatalkan');
+  if (reason === null) return;
+  const res = DB.cancelOrder(orderId, reason);
+  if (res.success) {
+    alert(res.message);
+    loadOrders();
+  } else {
+    alert(res.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════ MODAL BAYAR KASIR
+let chosenPayCashierMethod = 'Tunai';
+
+function openPayModal(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (!order) return;
+
+  currentActivePayOrderId = orderId;
+  const table = order.table_number || resolveTableNumber(order);
+  document.getElementById('pay-modal-title').textContent = table;
+  document.getElementById('pay-modal-order-id').textContent = order.id;
+  document.getElementById('pay-modal-customer').textContent = order.customer_display_name || resolveCustomerName(order);
+  document.getElementById('pay-modal-total').textContent = formatRp(order.total_amount);
+
+  selectPayCashierMethod('Tunai');
+  document.getElementById('pay-cash-input').value = order.total_amount;
+  calculateCashChange();
+
+  document.getElementById('pay-modal').classList.remove('hidden');
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal').classList.add('hidden');
+  currentActivePayOrderId = null;
+}
+
+function selectPayCashierMethod(method) {
+  chosenPayCashierMethod = method;
+  const btnTunai = document.getElementById('btn-pay-tunai');
+  const btnQris = document.getElementById('btn-pay-qris');
+  const btnKartu = document.getElementById('btn-pay-kartu');
+  const calcSection = document.getElementById('cash-calculator-section');
+
+  [btnTunai, btnQris, btnKartu].forEach(b => {
+    b.className = 'py-2.5 px-2 rounded-xl border-2 border-transparent bg-surface-container text-on-surface font-semibold text-xs flex flex-col items-center gap-1 hover:bg-surface-container-high transition-all';
+  });
+
+  if (method === 'Tunai') {
+    btnTunai.className = 'py-2.5 px-2 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex flex-col items-center gap-1 transition-all';
+    calcSection.classList.remove('hidden');
+  } else if (method === 'QRIS') {
+    btnQris.className = 'py-2.5 px-2 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex flex-col items-center gap-1 transition-all';
+    calcSection.classList.add('hidden');
+  } else {
+    btnKartu.className = 'py-2.5 px-2 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex flex-col items-center gap-1 transition-all';
+    calcSection.classList.add('hidden');
+  }
+}
+
+function setQuickCash(val) {
+  const order = allOrders.find(o => o.id === currentActivePayOrderId);
+  if (!order) return;
+  const input = document.getElementById('pay-cash-input');
+  if (val === 'exact') {
+    input.value = order.total_amount;
+  } else {
+    input.value = val;
+  }
+  calculateCashChange();
+}
+
+function calculateCashChange() {
+  const order = allOrders.find(o => o.id === currentActivePayOrderId);
+  if (!order) return;
+  const inputVal = parseFloat(document.getElementById('pay-cash-input').value || 0);
+  const change = Math.max(0, inputVal - order.total_amount);
+  document.getElementById('pay-cash-change').textContent = formatRp(change);
+}
+
+function submitCashierPayment() {
+  const order = allOrders.find(o => o.id === currentActivePayOrderId);
+  if (!order) return;
+
+  let amountPaid = order.total_amount;
+  if (chosenPayCashierMethod === 'Tunai') {
+    amountPaid = parseFloat(document.getElementById('pay-cash-input').value || 0);
+    if (amountPaid < order.total_amount) {
+      alert('Jumlah uang tunai kurang dari total tagihan (' + formatRp(order.total_amount) + ')');
+      return;
+    }
+  }
+
+  const res = DB.payOrder(order.id, {
+    payment_method: chosenPayCashierMethod,
+    amount_paid: amountPaid,
+    cashier_name: currentUser ? currentUser.name : 'Kasir'
+  });
+
+  if (res.success) {
+    closePayModal();
+    loadOrders();
+    if (confirm('Pembayaran Berhasil! Apakah ingin mencetak Tiket Dapur / Barista sekarang?')) {
+      printKitchenTicket(order.id);
+    }
+  } else {
+    alert(res.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════ TIKET DAPUR
+function printKitchenTicket(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (!order) return;
+
+  const table = order.table_number || resolveTableNumber(order);
+  document.getElementById('ticket-order-id').textContent = order.id;
+  document.getElementById('ticket-time').textContent = new Date(order.created_at.replace(' ', 'T')).toLocaleString('id-ID');
+  document.getElementById('ticket-table').textContent = table.toUpperCase();
+
+  const itemsHtml = (order.items || []).map(i => `
+    <div class="border-b border-dashed border-gray-300 pb-1.5">
+      <div class="flex justify-between font-bold text-sm">
+        <span>${i.quantity}x ${i.name}</span>
+      </div>
+      ${i.notes ? `<p class="font-bold text-[11px] text-amber-800 bg-amber-50 px-1 py-0.5 rounded mt-0.5">Catatan: ${i.notes}</p>` : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('ticket-items').innerHTML = itemsHtml;
+  document.getElementById('kitchen-ticket-modal').classList.remove('hidden');
+}
+
+function closeTicketModal() {
+  document.getElementById('kitchen-ticket-modal').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════ DETAIL NOTA MODAL
+function openDetail(orderId) {
+  currentDetailOrderId = orderId;
+  const order = allOrders.find(o => o.id === orderId);
+  if (!order) return;
+  document.getElementById('detail-order-id').textContent = order.id;
+
+  const itemsHtml = (order.items || []).map(i => `
+    <div class="flex items-start justify-between gap-2">
+      <div>
+        <p class="text-label-lg font-semibold text-on-surface">${i.quantity}× ${i.name}</p>
+        ${i.notes ? `<p class="text-body-sm text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded italic">Catatan: ${i.notes}</p>` : ''}
+      </div>
+      <p class="text-label-lg font-bold text-on-surface tabular-nums shrink-0">${formatRp(i.subtotal)}</p>
+    </div>
+  `).join('');
+
+  const orderTime = order.created_at ? new Date(order.created_at.replace(' ', 'T')).toLocaleString('id-ID') : '—';
+  const table = order.table_number || resolveTableNumber(order);
+  const custName = order.customer_display_name || resolveCustomerName(order);
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="flex flex-col gap-1 text-body-sm text-on-surface-variant">
+      <div class="flex justify-between"><span>Waktu Pesan</span><span class="text-on-surface font-medium">${orderTime}</span></div>
+      <div class="flex justify-between"><span>Lokasi / Meja</span><span class="text-primary font-bold">${table}</span></div>
+      <div class="flex justify-between"><span>Pemesan</span><span class="text-on-surface font-medium">${custName}</span></div>
+      <div class="flex justify-between"><span>Metode Bayar</span><span class="text-on-surface font-medium">${order.payment_method}</span></div>
+      <div class="flex justify-between"><span>Status Bayar</span><span class="font-bold ${order.payment_status === 'unpaid' ? 'text-amber-600' : 'text-emerald-600'}">${order.payment_status === 'unpaid' ? 'Belum Bayar' : 'Lunas'}</span></div>
+      <div class="flex justify-between"><span>Status Pesanan</span><span class="text-on-surface font-medium">${order.order_status || 'Diproses'}</span></div>
+    </div>
+    <div class="border-t border-dashed border-outline-variant pt-3 flex flex-col gap-2">${itemsHtml}</div>
+    <div class="border-t border-outline-variant pt-3 flex flex-col gap-1.5 text-body-sm">
+      <div class="flex justify-between text-on-surface-variant"><span>Subtotal</span><span>${formatRp(order.subtotal)}</span></div>
+      <div class="flex justify-between text-on-surface-variant"><span>Pajak PB1 (10%)</span><span>${formatRp(order.tax)}</span></div>
+      ${order.discount ? `<div class="flex justify-between text-green-600"><span>Diskon</span><span>-${formatRp(order.discount)}</span></div>` : ''}
+      <div class="flex justify-between font-bold text-on-surface mt-1"><span>TOTAL</span><span class="text-primary tabular-nums text-base font-bold">${formatRp(order.total_amount)}</span></div>
+      ${order.amount_paid > 0 ? `
+      <div class="flex justify-between text-on-surface-variant"><span>Dibayar</span><span>${formatRp(order.amount_paid)}</span></div>
+      <div class="flex justify-between font-bold text-green-700"><span>Kembalian</span><span>${formatRp(order.change_amount)}</span></div>` : ''}
+    </div>
+  `;
+  document.getElementById('detail-modal').classList.remove('hidden');
+}
+
+function closeDetail() {
+  document.getElementById('detail-modal').classList.add('hidden');
+  currentDetailOrderId = null;
+}
+
+function formatRp(n) {
+  return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+}
+</script>
+</body>
+</html>

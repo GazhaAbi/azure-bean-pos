@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <rect width="80" height="80" rx="16" fill="#f4f7fb"/>
+  <circle cx="40" cy="40" r="34" stroke="#0c4a7e" stroke-width="1" stroke-dasharray="2 3" opacity="0.3"/>
+  <!-- Saucer -->
+  <ellipse cx="40" cy="54" rx="20" ry="4" fill="#c9d8e5"/>
+  <ellipse cx="40" cy="53" rx="18" ry="3" fill="#ffffff" stroke="#0c4a7e" stroke-width="1.5"/>
+  <!-- Cup -->
+  <path d="M26 34h28c0 0-1 16-14 16s-14-16-14-16z" fill="#0c4a7e"/>
+  <!-- Coffee & Crema inside -->
+  <ellipse cx="40" cy="34" rx="14" ry="4" fill="#dfad76"/>
+  <ellipse cx="40" cy="34" rx="11" ry="2.5" fill="#6b4028"/>
+  <ellipse cx="40" cy="34" rx="6" ry="1.2" fill="#ffffff" opacity="0.8"/>
+  <!-- Handle -->
+  <path d="M50 37c4 0 7 2 7 5s-3 5-7 5" stroke="#0c4a7e" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Steams -->
+  <path d="M35 27c-1-3 1-5 0-7" stroke="#0c4a7e" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M41 25c-1-3 1-5 0-7" stroke="#8c5532" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M47 27c-1-3 1-5 0-7" stroke="#0c4a7e" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+</svg>

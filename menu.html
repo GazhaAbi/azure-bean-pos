@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Azure Bean — Buku Menu & Pemesanan Mandiri</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0c4a7e",
+            "primary-container": "#135c9a",
+            "primary-dark": "#062846",
+            "secondary": "#082c4f",
+            "tertiary": "#8c5532",
+            "coffee": "#6b4028",
+            "crema": "#e0b27e",
+            "surface": "#f4f7fb",
+            "on-surface": "#0c1e2e",
+            "on-surface-variant": "#4a5d6e",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#edf3f8",
+            "surface-container": "#e1ebf3",
+            "surface-container-high": "#d4e2ed",
+            "outline": "#6b8093",
+            "outline-variant": "#c9d8e5",
+          },
+          fontFamily: { "sans": ["Inter", "sans-serif"] },
+        }
+      }
+    }
+  </script>
+  <script src="assets/js/db.js"></script>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', sans-serif; background: #edf2f7; color: #0c1e2e; }
+    ::-webkit-scrollbar { display: none; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bottom-sheet { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bottom-sheet.closed { transform: translateY(100%); }
+    .bottom-sheet.open { transform: translateY(0); }
+    .sheet-scrim { transition: opacity 0.3s ease; }
+    .active-cat { background-color: #0c4a7e !important; color: #ffffff !important; border-color: #0c4a7e !important; }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-scaleUp { animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="bg-[#edf2f7] min-h-screen flex justify-center pb-24">
+
+  <!-- FRAME UTAMA SMARTPHONE (Responsif di HP & Tablet/Desktop) -->
+  <div class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-2xl relative border-x border-[#c9d8e5]/60">
+
+    <!-- ─── HEADER SMARTPHONE (Delftware & Specialty Coffee Edition) ─── -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#c9d8e5] px-4 pt-3 pb-3">
+      <div class="flex items-center justify-between gap-3 mb-2.5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-11 h-11 rounded-full p-0.5 bg-white shadow-md border-2 border-[#0c4a7e]/25 flex items-center justify-center shrink-0">
+            <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
+          </div>
+          <div>
+            <h1 class="text-base font-extrabold text-[#0c4a7e] leading-tight tracking-tight">Azure Bean Coffee</h1>
+            <p class="text-[11px] text-[#4a5d6e] flex items-center gap-1 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+              Buka · Pesan Mandiri dari Meja
+            </p>
+          </div>
+        </div>
+
+        <!-- Tombol Portal Kasir (Untuk Pegawai) -->
+        <a href="login.html" title="Masuk Portal Kasir" class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+        </a>
+      </div>
+
+      <!-- Bar Informasi Meja & Pemesan -->
+      <div class="bg-surface-container-low p-2 rounded-2xl flex items-center gap-2 border border-[#e5e5ea]">
+        <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-[#e5e5ea] shrink-0">
+          <span class="material-symbols-outlined text-primary text-base">table_restaurant</span>
+          <select id="cust-table" class="bg-transparent border-none outline-none text-xs font-bold text-on-surface p-0 pr-4 cursor-pointer focus:ring-0">
+            <option value="Meja 01">Meja 01</option>
+            <option value="Meja 02">Meja 02</option>
+            <option value="Meja 03" selected>Meja 03</option>
+            <option value="Meja 04">Meja 04</option>
+            <option value="Meja 05">Meja 05</option>
+            <option value="Meja 06">Meja 06</option>
+            <option value="Meja VIP">Meja VIP</option>
+            <option value="Take Away">Bawa Pulang (Take Away)</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-[#e5e5ea] flex-1">
+          <span class="material-symbols-outlined text-on-surface-variant text-base">person</span>
+          <input type="text" id="cust-name" placeholder="Nama Anda (opsional)"
+            class="bg-transparent border-none outline-none text-xs text-on-surface w-full p-0 focus:ring-0 placeholder-on-surface-variant/60 font-medium">
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── SEARCH & FILTER KATEGORI ─── -->
+    <div class="px-4 pt-3 pb-2 flex flex-col gap-2.5 bg-white border-b border-[#e5e5ea]/50 sticky top-[110px] z-20">
+      <!-- Search Input -->
+      <div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-2xl border border-[#e5e5ea] focus-within:border-primary focus-within:bg-white transition-all">
+        <span class="material-symbols-outlined text-on-surface-variant text-lg">search</span>
+        <input type="text" id="cust-search" placeholder="Cari kopi, matcha, makanan..." oninput="filterCustomerMenu()"
+          class="bg-transparent border-none outline-none flex-1 text-xs text-on-surface p-0 focus:ring-0 placeholder-on-surface-variant/70">
+      </div>
+
+      <!-- Horizontal Scrolling Category Chips with 3D Icons -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <button onclick="setCustCategory('all')" data-cat="all"
+          class="cat-chip active-cat px-3 py-1.5 rounded-full font-bold border border-primary whitespace-nowrap transition-all shadow-xs flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-primary/25 flex items-center justify-center">
+            <img src="assets/img/icons/cat_all.svg" alt="Semua" class="w-full h-full object-contain">
+          </span>
+          <span>Semua</span>
+        </button>
+        <button onclick="setCustCategory('CAT-01')" data-cat="CAT-01"
+          class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
+          <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-primary/25 flex items-center justify-center">
+            <img src="assets/img/icons/cat_coffee.jpg" alt="Kopi" class="w-full h-full object-cover rounded-full">
+          </span>
+          <span>Kopi</span>
+        </button>
+        <button onclick="setCustCategory('CAT-02')" data-cat="CAT-02"
+          class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
+          <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-emerald-600/25 flex items-center justify-center">
+            <img src="assets/img/icons/cat_tea.jpg" alt="Non-Kopi" class="w-full h-full object-cover rounded-full">
+          </span>
+          <span>Non-Kopi</span>
+        </button>
+        <button onclick="setCustCategory('CAT-03')" data-cat="CAT-03"
+          class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
+          <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-amber-600/25 flex items-center justify-center">
+            <img src="assets/img/icons/cat_food.jpg" alt="Makanan" class="w-full h-full object-cover rounded-full">
+          </span>
+          <span>Makanan</span>
+        </button>
+        <button onclick="setCustCategory('CAT-04')" data-cat="CAT-04"
+          class="cat-chip bg-white text-on-surface px-3 py-1.5 rounded-full font-semibold border border-[#c9d8e5] whitespace-nowrap hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-xs">
+          <span class="w-5 h-5 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-blue-400/35 flex items-center justify-center">
+            <img src="assets/img/icons/cat_drink.svg" alt="Minuman" class="w-full h-full object-contain">
+          </span>
+          <span>Minuman</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── PRODUCT GRID SMARTPHONE (2 KOLOM) ─── -->
+    <main class="flex-1 p-3.5">
+      <div id="cust-menu-grid" class="grid grid-cols-2 gap-3">
+        <!-- Loading Skeleton -->
+        <div class="col-span-2 py-16 text-center text-on-surface-variant flex flex-col items-center gap-2">
+          <span class="material-symbols-outlined text-4xl animate-spin text-primary">progress_activity</span>
+          <p class="text-xs font-medium">Menyiapkan daftar menu segar...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- ─── STICKY BOTTOM FLOATING CART BAR ─── -->
+    <div id="floating-cart-bar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-3 z-40 transition-transform duration-300 translate-y-full">
+      <div class="bg-primary text-white rounded-2xl p-3 shadow-2xl flex items-center justify-between gap-3 border border-white/20 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-sm relative">
+            <span class="material-symbols-outlined text-xl">shopping_bag</span>
+            <span id="bar-cart-badge" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-primary">0</span>
+          </div>
+          <div>
+            <p class="text-xs opacity-90 leading-tight"><span id="bar-cart-items">0</span> Menu Dipilih</p>
+            <p class="text-base font-bold tabular-nums" id="bar-cart-total">Rp 0</p>
+          </div>
+        </div>
+        <button onclick="openCartSheet()" class="h-10 px-4 rounded-xl bg-white text-primary font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all">
+          <span>Lihat Pesanan</span>
+          <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── BOTTOM SHEET / DRAWER KERANJANG PESANAN ─── -->
+    <div id="cart-sheet-backdrop" class="fixed inset-0 bg-black/40 sheet-scrim opacity-0 pointer-events-none z-50 transition-opacity" onclick="closeCartSheet()"></div>
+    <div id="cart-sheet" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl z-50 bottom-sheet closed flex flex-col max-h-[85vh] overflow-hidden">
+      <!-- Sheet Handle & Header -->
+      <div class="px-5 pt-3 pb-3 border-b border-[#e5e5ea] flex flex-col items-center">
+        <div class="w-10 h-1 bg-[#e4e2e4] rounded-full mb-3"></div>
+        <div class="flex items-center justify-between w-full">
+          <div>
+            <h2 class="text-base font-bold text-on-surface">Keranjang Pesanan Anda</h2>
+            <p class="text-xs text-on-surface-variant"><span id="sheet-table-badge">Meja 03</span> · Pastikan pesanan sudah sesuai</p>
+          </div>
+          <button onclick="closeCartSheet()" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined text-lg">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sheet Items List -->
+      <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5" id="sheet-items-list">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Sheet Footer & Payment -->
+      <div class="p-4 bg-surface-container-low/70 border-t border-[#e5e5ea] flex flex-col gap-3">
+        <!-- Metode Pembayaran -->
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Metode Pembayaran</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectCustPayment('QRIS')" id="pay-qris-btn"
+              class="py-2.5 px-3 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-base">qr_code_2</span>
+              <span>QRIS (E-Wallet)</span>
+            </button>
+            <button type="button" onclick="selectCustPayment('Bayar di Kasir')" id="pay-cashier-btn"
+              class="py-2.5 px-3 rounded-xl border-2 border-[#e5e5ea] bg-white text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-surface-container transition-all">
+              <span class="material-symbols-outlined text-base">point_of_sale</span>
+              <span>Bayar di Kasir</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rincian Biaya -->
+        <div class="space-y-1 text-xs">
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Subtotal</span>
+            <span id="sheet-subtotal">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Pajak Restoran PB1 (10%)</span>
+            <span id="sheet-tax">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-on-surface pt-1 border-t border-[#e5e5ea]">
+            <span>Total Pembayaran</span>
+            <span class="text-primary text-base font-extrabold tabular-nums" id="sheet-total">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Tombol Kirim Pesanan -->
+        <button onclick="submitCustomerOrder()" id="sheet-submit-btn"
+          class="w-full h-12 rounded-2xl bg-primary hover:bg-primary-container text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-98 transition-all">
+          <span class="material-symbols-outlined text-xl">check_circle</span>
+          <span>Konfirmasi & Kirim Pesanan</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── MODAL SUKSES PESANAN / DIGITAL RECEIPT ─── -->
+    <div id="order-success-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scaleUp">
+        <div class="bg-emerald-600 text-white p-6 text-center flex flex-col items-center gap-2">
+          <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+            <span class="material-symbols-outlined filled text-white text-3xl">done_all</span>
+          </div>
+          <h3 class="text-lg font-bold">Pesanan Berhasil Diterima!</h3>
+          <p class="text-xs opacity-90" id="receipt-success-subtitle">Sedang disiapkan oleh Barista Azure Bean</p>
+        </div>
+
+        <div class="p-5 flex flex-col gap-3 max-h-72 overflow-y-auto text-xs" id="receipt-success-body">
+          <!-- Rincian Nota Digital -->
+        </div>
+
+        <div class="p-4 bg-surface-container-low border-t border-[#e5e5ea] flex flex-col gap-2">
+          <button onclick="resetCustomerOrderFlow()" class="w-full h-11 rounded-xl bg-primary text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+            <span class="material-symbols-outlined text-base">restaurant_menu</span>
+            <span>Pesan Menu Lainnya</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════ STATE
+    let custProducts = [];
+    let custCart = [];
+    let activeCategory = 'all';
+    let chosenPayment = 'QRIS';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCustomerProducts();
+      // Update badge meja saat dropdown meja diubah
+      document.getElementById('cust-table').addEventListener('change', (e) => {
+        document.getElementById('sheet-table-badge').textContent = e.target.value;
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════ PRODUCTS FETCH VIA DB (JSON)
+    function loadCustomerProducts() {
+      try {
+        custProducts = DB.getAvailableProducts();
+        renderCustomerMenu(custProducts);
+      } catch (e) {
+        showMenuError('Gagal memuat menu. Silakan refresh halaman.');
+      }
+    }
+
+    function renderCustomerMenu(products) {
+      const grid = document.getElementById('cust-menu-grid');
+      if (!products.length) {
+        grid.innerHTML = `
+          <div class="col-span-2 py-12 text-center text-on-surface-variant flex flex-col items-center gap-2">
+            <span class="material-symbols-outlined text-4xl opacity-30">search_off</span>
+            <p class="text-xs font-medium">Menu tidak ditemukan.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = products.map(p => {
+        const cartItem = custCart.find(c => c.product_id === p.id);
+        const qty = cartItem ? cartItem.quantity : 0;
+        const isPlaceholder = !p.image_url || p.image_url.includes('placeholder') || p.image_url.endsWith('.svg');
+        const imgHtml = isPlaceholder
+          ? `<img src="${p.image_url || 'assets/img/coffee_placeholder.svg'}" alt="${p.name}" class="w-12 h-12 object-contain opacity-70">`
+          : `<img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.src='assets/img/coffee_placeholder.svg'; this.className='w-12 h-12 object-contain opacity-70'">`;
+
+        // Action button / Counter
+        const actionBtn = qty > 0
+          ? `<div class="flex items-center justify-between bg-primary text-white rounded-xl h-8 px-1 shadow-sm">
+              <button onclick="changeCustQty('${p.id}', -1)" class="w-6 h-6 rounded-lg hover:bg-white/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-sm">remove</span>
+              </button>
+              <span class="font-bold text-xs px-1.5">${qty}</span>
+              <button onclick="changeCustQty('${p.id}', 1)" class="w-6 h-6 rounded-lg hover:bg-white/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-sm">add</span>
+              </button>
+             </div>`
+          : `<button onclick="addToCustCart('${p.id}')"
+              class="w-full h-8 rounded-xl bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold text-xs flex items-center justify-center gap-1 transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-sm">add</span>
+              <span>Tambah</span>
+             </button>`;
+
+        return `
+          <div class="bg-white rounded-2xl p-2.5 border border-[#e5e5ea] shadow-sm flex flex-col justify-between select-none">
+            <div>
+              <div class="w-full aspect-square rounded-xl bg-surface-container-low flex items-center justify-center overflow-hidden mb-2 relative">
+                ${imgHtml}
+                ${p.stock <= 5 ? `<span class="absolute top-1.5 left-1.5 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">Sisa ${p.stock}</span>` : ''}
+              </div>
+              <h3 class="text-xs font-bold text-on-surface line-clamp-2 leading-snug">${p.name}</h3>
+              <p class="text-xs font-extrabold text-primary tabular-nums mt-0.5 mb-2">${formatRp(p.price)}</p>
+            </div>
+            ${actionBtn}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showMenuError(msg) {
+      document.getElementById('cust-menu-grid').innerHTML = `
+        <div class="col-span-2 py-12 text-center text-red-600 flex flex-col items-center gap-2">
+          <span class="material-symbols-outlined text-4xl">error</span>
+          <p class="text-xs font-medium">${msg}</p>
+        </div>
+      `;
+    }
+
+    // ═══════════════════════════════════════════════════════ CATEGORY & SEARCH
+    function setCustCategory(catId) {
+      activeCategory = catId;
+      document.querySelectorAll('.cat-chip').forEach(btn => {
+        if (btn.dataset.cat === catId) {
+          btn.classList.add('active-cat');
+          btn.classList.remove('bg-white', 'text-on-surface', 'text-on-surface-variant');
+        } else {
+          btn.classList.remove('active-cat');
+          btn.classList.add('bg-white', 'text-on-surface');
+        }
+      });
+      filterCustomerMenu();
+    }
+
+    function filterCustomerMenu() {
+      const q = document.getElementById('cust-search').value.toLowerCase().trim();
+      const filtered = custProducts.filter(p => {
+        const matchCat = (activeCategory === 'all' || p.category_id === activeCategory);
+        const matchQ   = (!q || p.name.toLowerCase().includes(q));
+        return matchCat && matchQ;
+      });
+      renderCustomerMenu(filtered);
+    }
+
+    // ═══════════════════════════════════════════════════════ CART LOGIC
+    function addToCustCart(productId) {
+      const product = custProducts.find(p => p.id === productId);
+      if (!product) return;
+
+      const existing = custCart.find(c => c.product_id === productId);
+      if (existing) {
+        if (existing.quantity >= product.stock) {
+          alert('Maaf, pesanan sudah mencapai batas stok yang tersedia (' + product.stock + ').');
+          return;
+        }
+        existing.quantity++;
+        existing.subtotal = existing.unit_price * existing.quantity;
+      } else {
+        custCart.push({
+          product_id: product.id,
+          name: product.name,
+          quantity: 1,
+          unit_price: product.price,
+          subtotal: product.price,
+          notes: ''
+        });
+      }
+      updateCartViews();
+    }
+
+    function changeCustQty(productId, delta) {
+      const item = custCart.find(c => c.product_id === productId);
+      if (!item) return;
+
+      const product = custProducts.find(p => p.id === productId);
+      if (delta > 0 && product && item.quantity >= product.stock) {
+        alert('Maaf, stok hanya tersisa ' + product.stock + '.');
+        return;
+      }
+
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        custCart = custCart.filter(c => c.product_id !== productId);
+      } else {
+        item.subtotal = item.unit_price * item.quantity;
+      }
+      updateCartViews();
+    }
+
+    function updateCustNotes(productId, note) {
+      const item = custCart.find(c => c.product_id === productId);
+      if (item) item.notes = note;
+    }
+
+    function updateCartViews() {
+      // Perbarui Menu Grid agar counter qty sinkron
+      filterCustomerMenu();
+
+      // Perbarui Floating Cart Bar
+      const bar = document.getElementById('floating-cart-bar');
+      const totalCount = custCart.reduce((s, c) => s + c.quantity, 0);
+      const subtotal = custCart.reduce((s, c) => s + c.subtotal, 0);
+
+      document.getElementById('bar-cart-badge').textContent = totalCount;
+      document.getElementById('bar-cart-items').textContent = totalCount;
+      document.getElementById('bar-cart-total').textContent = formatRp(subtotal);
+
+      if (totalCount > 0) {
+        bar.classList.remove('translate-y-full');
+      } else {
+        bar.classList.add('translate-y-full');
+        closeCartSheet();
+      }
+
+      // Perbarui Sheet
+      renderCartSheet();
+    }
+
+    function openCartSheet() {
+      if (custCart.length === 0) return;
+      renderCartSheet();
+      document.getElementById('cart-sheet-backdrop').classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('cart-sheet').classList.remove('closed');
+      document.getElementById('cart-sheet').classList.add('open');
+    }
+
+    function closeCartSheet() {
+      document.getElementById('cart-sheet-backdrop').classList.add('opacity-0', 'pointer-events-none');
+      document.getElementById('cart-sheet').classList.remove('open');
+      document.getElementById('cart-sheet').classList.add('closed');
+    }
+
+    function renderCartSheet() {
+      const list = document.getElementById('sheet-items-list');
+      if (custCart.length === 0) {
+        list.innerHTML = `<p class="text-xs text-center text-on-surface-variant py-4">Keranjang kosong.</p>`;
+        return;
+      }
+
+      list.innerHTML = custCart.map(item => `
+        <div class="bg-surface-container-low p-2.5 rounded-2xl flex flex-col gap-1.5 border border-[#e5e5ea]">
+          <div class="flex items-start justify-between">
+            <span class="text-xs font-bold text-on-surface leading-snug flex-1">${item.name}</span>
+            <span class="text-xs font-bold text-primary tabular-nums shrink-0 ml-2">${formatRp(item.subtotal)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex items-center bg-white rounded-xl border border-[#e5e5ea] h-7 px-1">
+              <button onclick="changeCustQty('${item.product_id}', -1)" class="w-5 h-5 flex items-center justify-center text-on-surface-variant hover:text-red-500">
+                <span class="material-symbols-outlined text-xs">remove</span>
+              </button>
+              <span class="text-xs font-bold px-2">${item.quantity}</span>
+              <button onclick="changeCustQty('${item.product_id}', 1)" class="w-5 h-5 flex items-center justify-center text-on-surface-variant hover:text-primary">
+                <span class="material-symbols-outlined text-xs">add</span>
+              </button>
+            </div>
+            <input type="text" placeholder="Catatan (e.g. less ice, manis)" value="${item.notes}"
+              onchange="updateCustNotes('${item.product_id}', this.value)"
+              class="flex-1 bg-white border border-[#e5e5ea] rounded-xl px-2 py-1 text-[11px] text-on-surface outline-none focus:border-primary">
+          </div>
+        </div>
+      `).join('');
+
+      const subtotal = custCart.reduce((s, c) => s + c.subtotal, 0);
+      const tax = Math.round(subtotal * 0.10);
+      const total = subtotal + tax;
+
+      document.getElementById('sheet-subtotal').textContent = formatRp(subtotal);
+      document.getElementById('sheet-tax').textContent = formatRp(tax);
+      document.getElementById('sheet-total').textContent = formatRp(total);
+    }
+
+    function selectCustPayment(method) {
+      chosenPayment = method;
+      const qrisBtn = document.getElementById('pay-qris-btn');
+      const cashBtn = document.getElementById('pay-cashier-btn');
+      if (method === 'QRIS') {
+        qrisBtn.className = 'py-2.5 px-3 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-1.5 transition-all';
+        cashBtn.className = 'py-2.5 px-3 rounded-xl border-2 border-[#e5e5ea] bg-white text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-surface-container transition-all';
+      } else {
+        cashBtn.className = 'py-2.5 px-3 rounded-xl border-2 border-primary bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-1.5 transition-all';
+        qrisBtn.className = 'py-2.5 px-3 rounded-xl border-2 border-[#e5e5ea] bg-white text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-surface-container transition-all';
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════ SUBMIT ORDER (VIA LOCAL JSON DB)
+    function submitCustomerOrder() {
+      if (custCart.length === 0) return;
+
+      const submitBtn = document.getElementById('sheet-submit-btn');
+      const tableName = document.getElementById('cust-table').value;
+      const customerInput = document.getElementById('cust-name').value.trim() || 'Pelanggan';
+      const fullCustomerName = `${customerInput} (${tableName})`;
+
+      const subtotal = custCart.reduce((s, c) => s + c.subtotal, 0);
+      const tax = Math.round(subtotal * 0.10);
+      const total = subtotal + tax;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Mengirim Pesanan...';
+
+      const isBayarDiKasir = chosenPayment === 'Bayar di Kasir';
+      const payload = {
+        items: custCart,
+        order_type: 'self_order',
+        table_number: tableName,
+        payment_method: chosenPayment,
+        payment_status: isBayarDiKasir ? 'unpaid' : 'paid',
+        order_status: isBayarDiKasir ? 'pending' : 'processing',
+        amount_paid: isBayarDiKasir ? 0 : total,
+        change_amount: 0,
+        cashier_name: `Self-Order (${tableName})`,
+        customer_name: fullCustomerName,
+        discount: 0
+      };
+
+      try {
+        const result = DB.createOrder(payload);
+
+        if (result.success) {
+          closeCartSheet();
+          showDigitalReceipt(result.data, tableName, customerInput);
+          // Refresh daftar menu agar stok yang baru berkurang ter-update
+          custProducts = DB.getAvailableProducts();
+          filterCustomerMenu();
+        } else {
+          alert('Gagal mengirim pesanan: ' + (result.message || 'Coba lagi.'));
+        }
+      } catch (e) {
+        alert('Terjadi kesalahan saat menyimpan pesanan: ' + e.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-xl">check_circle</span><span>Konfirmasi & Kirim Pesanan</span>';
+      }
+    }
+
+    function showDigitalReceipt(order, table, custName) {
+      const itemsHtml = (order.items || []).map(i => `
+        <div class="flex justify-between py-1 border-b border-dashed border-[#e5e5ea]">
+          <div>
+            <span class="font-bold text-on-surface">${i.quantity}x ${i.name}</span>
+            ${i.notes ? `<p class="text-[10px] text-on-surface-variant italic">Catatan: ${i.notes}</p>` : ''}
+          </div>
+          <span class="font-bold text-on-surface tabular-nums">${formatRp(i.subtotal)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('receipt-success-body').innerHTML = `
+        <div class="bg-surface-container-low p-3 rounded-2xl flex flex-col gap-1 border border-[#e5e5ea]">
+          <div class="flex justify-between text-on-surface-variant"><span>No. Nota</span><span class="font-mono font-bold text-primary">${order.id}</span></div>
+          <div class="flex justify-between text-on-surface-variant"><span>Meja / Lokasi</span><span class="font-bold text-on-surface">${table}</span></div>
+          <div class="flex justify-between text-on-surface-variant"><span>Pemesan</span><span class="font-bold text-on-surface">${custName}</span></div>
+          <div class="flex justify-between text-on-surface-variant"><span>Pembayaran</span><span class="font-bold text-emerald-600">${order.payment_method}</span></div>
+        </div>
+
+        ${order.payment_method === 'QRIS' ? `
+          <div class="p-3 bg-blue-50 rounded-2xl border border-blue-200 text-center flex flex-col items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-3xl">qr_code_scanner</span>
+            <p class="font-bold text-primary text-xs">QRIS Terverifikasi</p>
+            <p class="text-[11px] text-blue-900">Pembayaran otomatis tercatat di sistem kasir Azure Bean.</p>
+          </div>
+        ` : `
+          <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-center flex flex-col items-center gap-1.5">
+            <span class="material-symbols-outlined text-amber-600 text-3xl">payments</span>
+            <p class="font-bold text-amber-800 text-xs">Silakan Bayar di Kasir</p>
+            <p class="text-[11px] text-amber-900">Sebutkan <b>${table}</b> atau tunjukkan nomor nota ini ke kasir.</p>
+          </div>
+        `}
+
+        <div class="flex flex-col gap-1 pt-1">
+          <p class="text-[10px] uppercase font-bold text-on-surface-variant">Rincian Menu</p>
+          ${itemsHtml}
+        </div>
+
+        <div class="pt-2 border-t border-[#e5e5ea] space-y-0.5">
+          <div class="flex justify-between text-on-surface-variant"><span>Subtotal</span><span>${formatRp(order.subtotal)}</span></div>
+          <div class="flex justify-between text-on-surface-variant"><span>PB1 Restoran (10%)</span><span>${formatRp(order.tax)}</span></div>
+          <div class="flex justify-between font-bold text-sm text-on-surface pt-1"><span>Total</span><span class="text-primary font-extrabold text-base">${formatRp(order.total_amount)}</span></div>
+        </div>
+      `;
+
+      document.getElementById('order-success-modal').classList.remove('hidden');
+    }
+
+    function resetCustomerOrderFlow() {
+      document.getElementById('order-success-modal').classList.add('hidden');
+      custCart = [];
+      updateCartViews();
+    }
+
+    function formatRp(n) {
+      return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+    }
+  </script>
+</body>
+</html>

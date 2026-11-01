@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Bean — Statistik Penjualan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0c4a7e","on-primary": "#ffffff","primary-container": "#135c9a",
+            "secondary": "#082c4f","tertiary": "#8c5532","coffee": "#6b4028","crema": "#e0b27e",
+            "error": "#ba1a1a","surface": "#f4f7fb","on-surface": "#0c1e2e","on-surface-variant": "#4a5d6e",
+            "surface-container-lowest": "#ffffff","surface-container-low": "#edf3f8",
+            "surface-container": "#e1ebf3","surface-container-high": "#d4e2ed",
+            "surface-container-highest": "#c7d7e4","outline": "#6b8093","outline-variant": "#c9d8e5",
+          },
+          fontFamily: { "sans": ["Inter", "sans-serif"] },
+          fontSize: {
+            "headline-xl": ["34px", { lineHeight: "41px", fontWeight: "700" }],
+            "headline-md": ["22px", { lineHeight: "28px", fontWeight: "600" }],
+            "headline-sm": ["17px", { lineHeight: "22px", fontWeight: "600" }],
+            "body-md": ["15px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            "label-lg": ["15px", { lineHeight: "20px", fontWeight: "600" }],
+            "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "13px", fontWeight: "500" }],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="assets/js/db.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f7fb; overscroll-behavior: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #c9d8e5; border-radius: 4px; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bar { transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
+
+<!-- SIDEBAR NAV -->
+<aside class="w-20 h-screen bg-white shadow-[1px_0_0_#c9d8e5] flex flex-col items-center py-4 gap-1 z-50 shrink-0">
+  <!-- Delftware Azure Bean Emblem Logo -->
+  <div class="w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 flex items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean Coffee">
+    <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
+  </div>
+  <nav class="flex flex-col items-center gap-1 w-full px-2">
+    <a href="index.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">point_of_sale</span>
+      <span class="text-[10px] font-medium">Kasir</span>
+    </a>
+    <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">grid_view</span>
+      <span class="text-[10px] font-medium">Katalog</span>
+    </a>
+    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">receipt_long</span>
+      <span class="text-[10px] font-medium">Antrean</span>
+    </a>
+    <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer">
+      <span class="material-symbols-outlined filled text-xl">bar_chart</span>
+      <span class="text-[10px] font-semibold">Statistik</span>
+    </a>
+  </nav>
+  <!-- Bottom: User & Logout -->
+  <div class="mt-auto flex flex-col items-center gap-2 w-full px-2 pb-2">
+    <button onclick="handleLogout()" title="Keluar / Logout"
+      class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-xl">logout</span>
+    </button>
+    <div id="user-avatar" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase"
+      title="Kasir">K1</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- Header -->
+  <header class="bg-white border-b border-outline-variant px-6 py-4 flex items-center justify-between shrink-0">
+    <div>
+      <h1 class="text-headline-sm font-semibold text-on-surface">Analisis & Statistik Penjualan</h1>
+      <p class="text-body-sm text-on-surface-variant" id="stats-date">Hari ini: —</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="loadStats()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold text-label-lg transition-colors">
+        <span class="material-symbols-outlined text-base">refresh</span>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-4 gap-4">
+      <div class="bg-white rounded-2xl p-5 border border-outline-variant flex flex-col gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined filled text-primary text-xl">payments</span>
+          <span class="text-label-md uppercase tracking-wider font-semibold">Pendapatan Hari Ini</span>
+        </div>
+        <p class="text-2xl font-bold text-primary tabular-nums" id="kpi-revenue">Rp 0</p>
+        <p class="text-body-sm text-on-surface-variant" id="kpi-revenue-sub">Pajak PB1: Rp 0</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-outline-variant flex flex-col gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined filled text-secondary text-xl">receipt_long</span>
+          <span class="text-label-md uppercase tracking-wider font-semibold">Total Transaksi</span>
+        </div>
+        <p class="text-2xl font-bold text-on-surface tabular-nums" id="kpi-orders">0</p>
+        <p class="text-body-sm text-on-surface-variant">Transaksi tercatat</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-outline-variant flex flex-col gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined filled text-tertiary text-xl">trending_up</span>
+          <span class="text-label-md uppercase tracking-wider font-semibold">Rata-rata per Nota</span>
+        </div>
+        <p class="text-2xl font-bold text-on-surface tabular-nums" id="kpi-avg">Rp 0</p>
+        <p class="text-body-sm text-on-surface-variant">Per transaksi</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-outline-variant flex flex-col gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center gap-2 text-on-surface-variant">
+          <span class="material-symbols-outlined filled text-emerald-600 text-xl">inventory_2</span>
+          <span class="text-label-md uppercase tracking-wider font-semibold">Item Terjual</span>
+        </div>
+        <p class="text-2xl font-bold text-on-surface tabular-nums" id="kpi-items">0</p>
+        <p class="text-body-sm text-on-surface-variant">Total porsi/unit</p>
+      </div>
+    </div>
+
+    <!-- Charts + Recent Orders row -->
+    <div class="grid grid-cols-5 gap-4 flex-1">
+
+      <!-- Top Products Chart -->
+      <div class="col-span-3 bg-white rounded-2xl p-5 border border-outline-variant shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4">
+        <h3 class="text-headline-sm font-semibold text-on-surface">Produk Terlaris</h3>
+        <div id="top-products-chart" class="flex-1 flex items-end gap-3 min-h-40">
+          <p class="text-on-surface-variant text-body-sm m-auto">Memuat data...</p>
+        </div>
+      </div>
+
+      <!-- Payment Method Breakdown -->
+      <div class="col-span-2 bg-white rounded-2xl p-5 border border-outline-variant shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4">
+        <h3 class="text-headline-sm font-semibold text-on-surface">Metode Pembayaran</h3>
+        <div id="payment-breakdown" class="flex flex-col gap-3">
+          <p class="text-on-surface-variant text-body-sm">Memuat...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white rounded-2xl border border-outline-variant shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between">
+        <h3 class="text-headline-sm font-semibold text-on-surface">Transaksi Terbaru</h3>
+        <span class="text-body-sm text-on-surface-variant">20 pesanan terakhir</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant bg-surface-container-low">
+              <th class="text-left py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">No. Nota</th>
+              <th class="text-left py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Waktu</th>
+              <th class="text-left py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Pelanggan</th>
+              <th class="text-left py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Metode</th>
+              <th class="text-center py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Item</th>
+              <th class="text-right py-3 px-5 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Total</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table">
+            <tr><td colspan="6" class="text-center py-8 text-on-surface-variant text-body-sm">Memuat transaksi...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+let currentUser = null;
+let allOrders = [];
+
+const METHOD_COLORS = {
+  'QRIS': '#0c4a7e',
+  'Kartu': '#082c4f',
+  'Tunai': '#8c5532',
+  'E-Wallet': '#135c9a',
+  'Bayar di Kasir': '#c48951'
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  currentUser = DB.requireAuth();
+  if (!currentUser) return;
+
+  document.getElementById('user-avatar').textContent = currentUser.name.slice(0, 2).toUpperCase();
+  document.getElementById('user-avatar').title = `${currentUser.name} (${currentUser.role})`;
+
+  loadStats();
+});
+
+function handleLogout() {
+  if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.name}?`)) {
+    DB.logout();
+  }
+}
+
+function loadStats() {
+  const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('stats-date').textContent = 'Hari ini: ' + today;
+
+  allOrders = DB.getOrders();
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayOrders = allOrders.filter(o => o.created_at && o.created_at.startsWith(todayStr));
+
+  // If there are transactions today, show today's KPIs; if none yet today, use allOrders for demonstration
+  const displayOrders = todayOrders.length > 0 ? todayOrders : allOrders;
+
+  computeAndRenderKPIs(displayOrders, todayOrders.length > 0);
+  renderTopProducts(displayOrders);
+  renderPaymentBreakdown(displayOrders);
+  renderOrdersTable(allOrders);
+}
+
+function computeAndRenderKPIs(orders, isTodayOnly) {
+  const revenue = orders.reduce((s, o) => s + (o.total_amount || 0), 0);
+  const count = orders.length;
+  const avg = count > 0 ? revenue / count : 0;
+  const items = orders.reduce((s, o) => s + (o.items || []).reduce((si, i) => si + (i.quantity || 0), 0), 0);
+
+  document.getElementById('kpi-revenue').textContent = formatRp(revenue);
+  document.getElementById('kpi-revenue-sub').textContent = `Pajak PB1: ${formatRp(Math.round(revenue * 0.1))}`;
+  document.getElementById('kpi-orders').textContent = count;
+  document.getElementById('kpi-avg').textContent = formatRp(avg);
+  document.getElementById('kpi-items').textContent = items;
+}
+
+function renderTopProducts(orders) {
+  const productQty = {};
+  orders.forEach(o => (o.items || []).forEach(i => {
+    productQty[i.name] = (productQty[i.name] || 0) + i.quantity;
+  }));
+  const sorted = Object.entries(productQty).sort((a, b) => b[1] - a[1]).slice(0, 7);
+
+  const chart = document.getElementById('top-products-chart');
+  if (!sorted.length) {
+    chart.innerHTML = '<p class="text-on-surface-variant text-body-sm m-auto">Belum ada data transaksi.</p>';
+    return;
+  }
+  const max = Math.max(...sorted.map(([,v]) => v));
+  chart.innerHTML = sorted.map(([name, qty], i) => `
+    <div class="flex flex-col items-center gap-1 flex-1">
+      <span class="text-label-sm text-on-surface font-bold">${qty}</span>
+      <div class="w-full bg-primary/10 rounded-t-lg flex items-end overflow-hidden" style="height: 120px;">
+        <div class="bar w-full rounded-t-lg" style="height: ${(qty/max*100)}%; background: ${i === 0 ? '#0058bc' : '#adc6ff'}"></div>
+      </div>
+      <span class="text-[10px] text-on-surface-variant text-center leading-tight w-full truncate" title="${name}">${name.split(' ').slice(0,2).join(' ')}</span>
+    </div>
+  `).join('');
+}
+
+function renderPaymentBreakdown(orders) {
+  const methodCount = {};
+  orders.forEach(o => {
+    const m = o.payment_method || 'Lainnya';
+    methodCount[m] = (methodCount[m] || 0) + 1;
+  });
+  const total = orders.length;
+  const breakdown = document.getElementById('payment-breakdown');
+  if (!total) {
+    breakdown.innerHTML = '<p class="text-on-surface-variant text-body-sm">Belum ada transaksi.</p>';
+    return;
+  }
+  breakdown.innerHTML = Object.entries(methodCount).map(([method, count]) => {
+    const pct = Math.round(count / total * 100);
+    const color = METHOD_COLORS[method] || '#717786';
+    return `<div class="flex flex-col gap-1.5">
+      <div class="flex justify-between text-label-md">
+        <span class="text-on-surface font-semibold">${method}</span>
+        <span class="text-on-surface-variant">${count} (${pct}%)</span>
+      </div>
+      <div class="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+        <div class="h-full rounded-full" style="width: ${pct}%; background: ${color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('orders-table');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant text-body-sm">Belum ada transaksi tercatat.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.slice(0, 20).map(o => {
+    const orderTime = o.created_at ? new Date(o.created_at.replace(' ', 'T')).toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}) : '—';
+    const totalItems = (o.items || []).reduce((s,i) => s + i.quantity, 0);
+    return `
+    <tr class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors">
+      <td class="py-3 px-5 font-mono text-label-md text-primary font-semibold">${o.id}</td>
+      <td class="py-3 px-5 text-body-sm text-on-surface-variant">${orderTime}</td>
+      <td class="py-3 px-5 text-body-sm text-on-surface font-medium">${o.customer_name}</td>
+      <td class="py-3 px-5">
+        <span class="px-2 py-0.5 rounded-full text-label-sm font-semibold text-white" style="background: ${METHOD_COLORS[o.payment_method] || '#717786'}">${o.payment_method}</span>
+      </td>
+      <td class="py-3 px-5 text-center text-body-sm text-on-surface">${totalItems}</td>
+      <td class="py-3 px-5 text-right font-bold text-on-surface tabular-nums">${formatRp(o.total_amount)}</td>
+    </tr>
+  `;
+  }).join('');
+}
+
+function formatRp(n) {
+  return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+}
+</script>
+</body>
+</html>

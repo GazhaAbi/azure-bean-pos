@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Bean — Manajemen Katalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0c4a7e","on-primary": "#ffffff","primary-container": "#135c9a",
+            "on-primary-container": "#fefcff","secondary": "#082c4f","on-secondary": "#ffffff",
+            "tertiary": "#8c5532","on-tertiary": "#ffffff","error": "#ba1a1a","on-error": "#ffffff",
+            "surface": "#f4f7fb","on-surface": "#0c1e2e","on-surface-variant": "#4a5d6e",
+            "surface-container-lowest": "#ffffff","surface-container-low": "#edf3f8",
+            "surface-container": "#e1ebf3","surface-container-high": "#d4e2ed",
+            "surface-container-highest": "#c7d7e4","outline": "#6b8093","outline-variant": "#c9d8e5",
+            "primary-fixed": "#d3e3f3","on-primary-fixed": "#041b30",
+          },
+          fontFamily: { "sans": ["Inter", "sans-serif"] },
+          fontSize: {
+            "headline-sm": ["17px", { lineHeight: "22px", fontWeight: "600" }],
+            "body-md": ["15px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            "label-lg": ["15px", { lineHeight: "20px", fontWeight: "600" }],
+            "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "13px", fontWeight: "500" }],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="assets/js/db.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f7fb; overscroll-behavior: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #c9d8e5; border-radius: 4px; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .modal-overlay { backdrop-filter: blur(8px); }
+    .btn-primary { background: #0c4a7e; color: #fff; transition: all 0.15s; }
+    .btn-primary:hover { background: #135c9a; }
+    .btn-primary:active { transform: scale(0.98); }
+    #toast { transition: all 0.3s ease; }
+    tr:hover td { background: #edf3f8; }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
+
+<!-- SIDEBAR NAV -->
+<aside class="w-20 h-screen bg-white shadow-[1px_0_0_#c9d8e5] flex flex-col items-center py-4 gap-1 z-50 shrink-0">
+  <!-- Delftware Azure Bean Emblem Logo -->
+  <div class="w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 flex items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean Coffee">
+    <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
+  </div>
+  <nav class="flex flex-col items-center gap-1 w-full px-2">
+    <a href="index.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">point_of_sale</span>
+      <span class="text-[10px] font-medium">Kasir</span>
+    </a>
+    <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer">
+      <span class="material-symbols-outlined filled text-xl">grid_view</span>
+      <span class="text-[10px] font-semibold">Katalog</span>
+    </a>
+    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">receipt_long</span>
+      <span class="text-[10px] font-medium">Antrean</span>
+    </a>
+    <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
+      <span class="material-symbols-outlined text-xl">bar_chart</span>
+      <span class="text-[10px] font-medium">Statistik</span>
+    </a>
+  </nav>
+
+  <!-- Bottom: User & Logout -->
+  <div class="mt-auto flex flex-col items-center gap-2 w-full px-2 pb-2">
+    <button onclick="handleLogout()" title="Keluar / Logout"
+      class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-xl">logout</span>
+    </button>
+    <div id="user-avatar" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase"
+      title="Kasir">K1</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- Header -->
+  <header class="bg-white border-b border-outline-variant px-6 py-4 flex items-center justify-between shrink-0">
+    <div>
+      <h1 class="text-headline-sm font-semibold text-on-surface">Manajemen Katalog Produk</h1>
+      <p class="text-body-sm text-on-surface-variant"><span id="product-count">0</span> produk aktif</p>
+    </div>
+    <button onclick="openAddModal()" class="btn-primary h-10 px-4 rounded-xl flex items-center gap-2 font-semibold text-label-lg shadow-sm">
+      <span class="material-symbols-outlined text-base">add</span>
+      Tambah Produk
+    </button>
+  </header>
+
+  <!-- Filters -->
+  <div class="px-6 py-3 border-b border-outline-variant flex items-center gap-3 shrink-0 bg-white">
+    <div class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded-xl flex-1 max-w-xs">
+      <span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+      <input type="text" id="search-input" placeholder="Cari produk..." oninput="filterTable()"
+        class="bg-transparent border-none outline-none flex-1 text-body-md text-on-surface placeholder-on-surface-variant">
+    </div>
+    <select id="cat-filter" onchange="filterTable()" class="bg-surface-container text-on-surface rounded-xl pl-3.5 pr-9 py-2 border-none outline-none text-body-md cursor-pointer hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary">
+      <option value="">Semua Kategori</option>
+      <option value="CAT-01">☕ Kopi</option>
+      <option value="CAT-02">🍵 Non-Kopi</option>
+      <option value="CAT-03">🥐 Makanan</option>
+      <option value="CAT-04">🥤 Minuman</option>
+    </select>
+    <select id="avail-filter" onchange="filterTable()" class="bg-surface-container text-on-surface rounded-xl pl-3.5 pr-9 py-2 border-none outline-none text-body-md cursor-pointer hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary">
+      <option value="">Semua Status</option>
+      <option value="true">✅ Tersedia</option>
+      <option value="false">❌ Tidak Tersedia</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="flex-1 overflow-auto px-6 py-4">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="border-b border-outline-variant">
+          <th class="text-left py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Produk</th>
+          <th class="text-left py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">SKU</th>
+          <th class="text-left py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Kategori</th>
+          <th class="text-right py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Harga</th>
+          <th class="text-center py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Stok</th>
+          <th class="text-center py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Status</th>
+          <th class="text-center py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="product-table-body">
+        <!-- Rendered by JS -->
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- ADD/EDIT PRODUCT MODAL -->
+<div id="product-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+  <div class="modal-overlay absolute inset-0 bg-black/20" onclick="closeModal()"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 p-6 flex flex-col gap-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between">
+      <h3 id="modal-title" class="text-headline-sm font-semibold text-on-surface">Tambah Produk Baru</h3>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <div>
+        <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">Nama Produk *</label>
+        <input type="text" id="f-name" placeholder="e.g., Iced Americano"
+          class="w-full bg-surface-container px-4 py-3 rounded-xl border-none outline-none text-body-md text-on-surface focus:ring-2 focus:ring-primary">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">SKU</label>
+          <input type="text" id="f-sku" placeholder="CF-ESP-01"
+            class="w-full bg-surface-container px-4 py-3 rounded-xl border-none outline-none text-body-md text-on-surface focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+          <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">Kategori *</label>
+          <select id="f-category" class="w-full bg-surface-container pl-4 pr-10 py-3 rounded-xl border-none outline-none text-body-md text-on-surface cursor-pointer focus:ring-2 focus:ring-primary">
+            <option value="CAT-01">☕ Kopi</option>
+            <option value="CAT-02">🍵 Non-Kopi</option>
+            <option value="CAT-03">🥐 Makanan</option>
+            <option value="CAT-04">🥤 Minuman</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">Harga (Rp) *</label>
+          <input type="number" id="f-price" placeholder="28000" min="0"
+            class="w-full bg-surface-container px-4 py-3 rounded-xl border-none outline-none text-body-md text-on-surface focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+          <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">Stok Awal</label>
+          <input type="number" id="f-stock" placeholder="50" min="0"
+            class="w-full bg-surface-container px-4 py-3 rounded-xl border-none outline-none text-body-md text-on-surface focus:ring-2 focus:ring-primary">
+        </div>
+      </div>
+      <div>
+        <label class="text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1.5">Gambar Produk (Dari Komputer)</label>
+        <!-- Preview area -->
+        <div id="img-preview-wrap" class="hidden mb-2 flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+          <img id="img-preview" src="" alt="Preview" class="w-16 h-16 rounded-xl object-cover border border-outline-variant">
+          <div class="flex-1 min-w-0">
+            <p id="img-preview-name" class="text-label-md text-on-surface font-semibold truncate"></p>
+            <p id="img-preview-size" class="text-body-sm text-on-surface-variant"></p>
+          </div>
+          <button type="button" onclick="clearImagePicker()" class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors shrink-0">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+        <!-- Drop zone / file picker -->
+        <div id="img-dropzone"
+          onclick="document.getElementById('f-image-file').click()"
+          ondragover="event.preventDefault(); this.classList.add('border-primary','bg-primary/5')"
+          ondragleave="this.classList.remove('border-primary','bg-primary/5')"
+          ondrop="handleImageDrop(event)"
+          class="w-full border-2 border-dashed border-outline-variant rounded-xl px-4 py-5 flex flex-col items-center gap-2 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all select-none">
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl">add_photo_alternate</span>
+          <p class="text-label-lg text-on-surface font-semibold">Klik atau seret gambar ke sini</p>
+          <p class="text-body-sm text-on-surface-variant">JPG, PNG, WEBP, SVG langsung dari perangkat</p>
+        </div>
+        <!-- Hidden inputs -->
+        <input type="file" id="f-image-file" accept="image/*" class="hidden" onchange="handleImageSelect(this)">
+        <input type="hidden" id="f-image" value="">
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="f-available" checked class="w-5 h-5 accent-primary cursor-pointer rounded">
+        <label for="f-available" class="text-body-md text-on-surface cursor-pointer">Produk Tersedia untuk Dijual</label>
+      </div>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeModal()" class="flex-1 h-12 rounded-xl border border-outline-variant text-on-surface font-semibold text-label-lg hover:bg-surface-container transition-colors">
+        Batal
+      </button>
+      <button onclick="saveProduct()" class="btn-primary flex-1 h-12 rounded-xl font-semibold text-label-lg flex items-center justify-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-base">save</span>
+        <span id="save-btn-label">Simpan Produk</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+  <div class="modal-overlay absolute inset-0 bg-black/20" onclick="closeDeleteModal()"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 p-6 flex flex-col gap-4">
+    <div class="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center mx-auto">
+      <span class="material-symbols-outlined text-error text-2xl">delete_forever</span>
+    </div>
+    <div class="text-center">
+      <h3 class="text-headline-sm font-semibold text-on-surface">Hapus Produk?</h3>
+      <p class="text-body-sm text-on-surface-variant mt-1">Tindakan ini tidak dapat dibatalkan. Produk "<span id="delete-product-name" class="font-semibold text-on-surface"></span>" akan dihapus permanen.</p>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" class="flex-1 h-12 rounded-xl border border-outline-variant text-on-surface font-semibold text-label-lg hover:bg-surface-container transition-colors">
+        Batal
+      </button>
+      <button onclick="confirmDelete()" class="flex-1 h-12 rounded-xl bg-error text-white font-semibold text-label-lg hover:opacity-90 transition-all active:scale-98 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-base">delete</span>
+        Hapus
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none z-[100]">
+  <div id="toast-inner" class="px-5 py-3 rounded-2xl shadow-xl text-white font-semibold text-label-lg flex items-center gap-2 min-w-64 justify-center"></div>
+</div>
+
+<script>
+let currentUser = null;
+let allProducts = [];
+let editingId = null;
+let deletingId = null;
+let currentBase64Image = '';
+
+const CAT_NAMES = { 'CAT-01': '☕ Kopi', 'CAT-02': '🍵 Non-Kopi', 'CAT-03': '🥐 Makanan', 'CAT-04': '🥤 Minuman' };
+
+document.addEventListener('DOMContentLoaded', () => {
+  currentUser = DB.requireAuth();
+  if (!currentUser) return;
+
+  document.getElementById('user-avatar').textContent = currentUser.name.slice(0, 2).toUpperCase();
+  document.getElementById('user-avatar').title = `${currentUser.name} (${currentUser.role})`;
+  loadProducts();
+});
+
+function handleLogout() {
+  if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.name}?`)) {
+    DB.logout();
+  }
+}
+
+function loadProducts() {
+  allProducts = DB.getProducts();
+  renderTable(allProducts);
+}
+
+function renderTable(products) {
+  document.getElementById('product-count').textContent = products.filter(p => p.is_available).length;
+  const tbody = document.getElementById('product-table-body');
+  if (!products.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12 text-on-surface-variant"><span class="material-symbols-outlined text-4xl opacity-30 block mb-2">search_off</span>Tidak ada produk ditemukan.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = products.map(p => {
+    const isPlaceholder = !p.image_url || p.image_url.includes('placeholder') || p.image_url.endsWith('.svg');
+    const imgHtml = isPlaceholder
+      ? `<img src="${p.image_url || 'assets/img/coffee_placeholder.svg'}" alt="" class="w-6 h-6 object-contain opacity-70" onerror="this.style.display='none'">`
+      : `<img src="${p.image_url}" alt="" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.src='assets/img/coffee_placeholder.svg'; this.className='w-6 h-6 object-contain opacity-70'">`;
+    return `
+    <tr class="border-b border-outline-variant/50 transition-colors">
+      <td class="py-3 px-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0 overflow-hidden">
+            ${imgHtml}
+          </div>
+          <span class="font-semibold text-on-surface text-body-md">${p.name}</span>
+        </div>
+      </td>
+      <td class="py-3 px-4 text-body-sm text-on-surface-variant font-mono">${p.sku}</td>
+      <td class="py-3 px-4">
+        <span class="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-label-sm font-semibold">${CAT_NAMES[p.category_id] || p.category_id}</span>
+      </td>
+      <td class="py-3 px-4 text-right font-bold text-on-surface tabular-nums">${formatRp(p.price)}</td>
+      <td class="py-3 px-4 text-center">
+        <span class="font-semibold text-body-md ${p.stock <= 5 ? 'text-error' : p.stock <= 15 ? 'text-amber-600' : 'text-on-surface'}">${p.stock}</span>
+      </td>
+      <td class="py-3 px-4 text-center">
+        <span class="px-2.5 py-1 rounded-full text-label-sm font-semibold ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-surface-container text-on-surface-variant'}">
+          ${p.is_available ? '✅ Tersedia' : '❌ Tidak Aktif'}
+        </span>
+      </td>
+      <td class="py-3 px-4 text-center">
+        <div class="flex items-center justify-center gap-2">
+          <button onclick="openEditModal('${p.id}')" class="w-8 h-8 rounded-lg hover:bg-primary/10 text-primary flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-base">edit</span>
+          </button>
+          <button onclick="openDeleteModal('${p.id}', '${p.name.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg hover:bg-error/10 text-error flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const cat = document.getElementById('cat-filter').value;
+  const avail = document.getElementById('avail-filter').value;
+  const filtered = allProducts.filter(p => {
+    const matchQ = !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+    const matchCat = !cat || p.category_id === cat;
+    const matchAvail = avail === '' || String(p.is_available) === avail;
+    return matchQ && matchCat && matchAvail;
+  });
+  renderTable(filtered);
+}
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Tambah Produk Baru';
+  document.getElementById('save-btn-label').textContent = 'Simpan Produk';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-sku').value = '';
+  document.getElementById('f-category').value = 'CAT-01';
+  document.getElementById('f-price').value = '';
+  document.getElementById('f-stock').value = '50';
+  document.getElementById('f-available').checked = true;
+  clearImagePicker();
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function openEditModal(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Produk';
+  document.getElementById('save-btn-label').textContent = 'Simpan Perubahan';
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-sku').value = p.sku;
+  document.getElementById('f-category').value = p.category_id;
+  document.getElementById('f-price').value = p.price;
+  document.getElementById('f-stock').value = p.stock;
+  document.getElementById('f-available').checked = p.is_available;
+  clearImagePicker();
+  if (p.image_url) {
+    document.getElementById('f-image').value = p.image_url;
+    showExistingPreview(p.image_url, p.name);
+  }
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('product-modal').classList.add('hidden');
+  clearImagePicker();
+}
+
+function saveProduct() {
+  const name = document.getElementById('f-name').value.trim();
+  const price = parseFloat(document.getElementById('f-price').value);
+  const category_id = document.getElementById('f-category').value;
+  if (!name) { showToast('Nama produk wajib diisi.', 'error'); return; }
+  if (!price || price <= 0) { showToast('Harga produk tidak valid.', 'error'); return; }
+
+  // Gunakan Base64 data URL gambar baru, atau URL lama yang sudah ada
+  const imageUrl = currentBase64Image || document.getElementById('f-image').value || 'assets/img/coffee_placeholder.svg';
+
+  const body = {
+    name,
+    sku: document.getElementById('f-sku').value.trim() || 'SKU-' + Date.now().toString().slice(-6),
+    category_id,
+    price,
+    stock: parseInt(document.getElementById('f-stock').value || '0', 10),
+    image_url: imageUrl,
+    is_available: document.getElementById('f-available').checked,
+  };
+
+  const res = DB.saveProduct(body, editingId);
+  if (res.success) {
+    showToast(res.message, 'success');
+    closeModal();
+    loadProducts();
+  } else {
+    showToast(res.message, 'error');
+  }
+}
+
+// ═══ CLIENT-SIDE IMAGE PICKER (BASE64 DATA-URL) ══════════════════════════
+function handleImageSelect(input) {
+  if (input.files && input.files[0]) {
+    processImageFile(input.files[0]);
+  }
+}
+
+function handleImageDrop(event) {
+  event.preventDefault();
+  const dropzone = document.getElementById('img-dropzone');
+  dropzone.classList.remove('border-primary', 'bg-primary/5');
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('File yang diseret bukan gambar.', 'error');
+    return;
+  }
+  processImageFile(file);
+}
+
+function processImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    currentBase64Image = e.target.result; // Data URL Base64
+    document.getElementById('img-preview').src = currentBase64Image;
+    document.getElementById('img-preview-name').textContent = file.name;
+    document.getElementById('img-preview-size').textContent = formatFileSize(file.size);
+    document.getElementById('img-preview-wrap').classList.remove('hidden');
+    document.getElementById('img-dropzone').classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showExistingPreview(url, name) {
+  document.getElementById('img-preview').src = url;
+  document.getElementById('img-preview-name').textContent = name || 'Gambar Produk';
+  document.getElementById('img-preview-size').textContent = 'Gambar tersimpan';
+  document.getElementById('img-preview-wrap').classList.remove('hidden');
+  document.getElementById('img-dropzone').classList.add('hidden');
+}
+
+function clearImagePicker() {
+  currentBase64Image = '';
+  document.getElementById('f-image-file').value = '';
+  document.getElementById('f-image').value = '';
+  document.getElementById('img-preview').src = '';
+  document.getElementById('img-preview-name').textContent = '';
+  document.getElementById('img-preview-size').textContent = '';
+  document.getElementById('img-preview-wrap').classList.add('hidden');
+  document.getElementById('img-dropzone').classList.remove('hidden');
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function openDeleteModal(id, name) {
+  deletingId = id;
+  document.getElementById('delete-product-name').textContent = name;
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); }
+
+function confirmDelete() {
+  if (!deletingId) return;
+  const res = DB.deleteProduct(deletingId);
+  if (res.success) {
+    showToast(res.message, 'success');
+    closeDeleteModal();
+    loadProducts();
+  } else {
+    showToast(res.message, 'error');
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const inner = document.getElementById('toast-inner');
+  inner.className = `px-5 py-3 rounded-2xl shadow-xl text-white font-semibold flex items-center gap-2 min-w-64 justify-center ${type === 'error' ? 'bg-error' : 'bg-emerald-600'}`;
+  inner.innerHTML = `<span class="material-symbols-outlined text-base">${type === 'error' ? 'error' : 'check_circle'}</span> ${msg}`;
+  toast.classList.remove('opacity-0', 'pointer-events-none');
+  toast.classList.add('opacity-100');
+  setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0', 'pointer-events-none'); }, 3000);
+}
+
+function formatRp(n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+</script>
+</body>
+</html>
