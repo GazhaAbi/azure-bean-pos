@@ -638,7 +638,7 @@
         if (result.success) {
           if (tableName && tableName.startsWith('Meja')) {
             if (typeof DB !== 'undefined' && typeof DB.updateTableStatus === 'function') {
-              DB.updateTableStatus(tableName, 'occupied', fullCustomerName, result.data.id);
+              DB.updateTableStatus(tableName, 'occupied', customerInput || 'Pelanggan', result.data.id);
             }
           }
           closeCartSheet();

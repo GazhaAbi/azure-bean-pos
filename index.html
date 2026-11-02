@@ -784,7 +784,7 @@ function processCheckout() {
 
   if (res.success) {
     if (selectedTable !== 'Take Away') {
-      DB.updateTableStatus(selectedTable, 'occupied', fullCustomerName, res.data.id);
+      DB.updateTableStatus(selectedTable, 'occupied', customerName || 'Pelanggan', res.data.id);
     }
     renderTableStatusBar();
     closePaymentModal();

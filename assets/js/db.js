@@ -445,7 +445,14 @@ class JsonDatabaseManager {
     const stored = JSON.parse(localStorage.getItem('pos_tables') || '[]');
     return stored.map(s => {
       const init = INITIAL_TABLES.find(i => i.id === s.id || (s.name && i.name.toLowerCase() === s.name.toLowerCase())) || {};
-      return { ...init, ...s };
+      const merged = { ...init, ...s };
+      if (!merged.zone) merged.zone = init.zone || 'Area Tengah';
+      if (!merged.shape) merged.shape = init.shape || 'rect';
+      if (!merged.capacity) merged.capacity = init.capacity || 4;
+      if (merged.customer_name) {
+        merged.customer_name = merged.customer_name.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+      }
+      return merged;
     });
   }
 
@@ -463,7 +470,8 @@ class JsonDatabaseManager {
     if (idx !== -1) {
       tables[idx].status = status;
       if (status === 'occupied') {
-        tables[idx].customer_name = customerName || tables[idx].customer_name || 'Pelanggan';
+        const cleanCust = customerName ? customerName.replace(/\s*\([^)]*\)\s*/g, ' ').trim() : null;
+        tables[idx].customer_name = cleanCust || tables[idx].customer_name || 'Pelanggan';
         tables[idx].order_id = orderId || tables[idx].order_id || null;
         tables[idx].updated_at = new Date().toTimeString().slice(0, 5);
       } else if (status === 'cleaning') {
