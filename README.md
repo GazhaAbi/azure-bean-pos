@@ -27,7 +27,7 @@ Buka tautan resmi berikut di browser smartphone, tablet, atau komputer Anda:
 ## ✨ Fitur Unggulan
 
 1. **Denah Visual Meja & Aturan Waktu Otomatis**:
-   - Denah kursi visual intuitif (2 kursi, 4 kursi, VIP) berlatar motif keramik Delft.
+   - Denah kursi visual intuitif (2 kursi, 4 kursi, VIP).
    - Timer santai 60 menit per meja dengan indikator visual:
      - 🔵 **Santai** (0–45 mnt): Biru tenang.
      - 🟡 **Peringatan** (45–60 mnt): Amber berdenyut (sisa &le; 15 mnt).
@@ -39,6 +39,6 @@ Buka tautan resmi berikut di browser smartphone, tablet, atau komputer Anda:
    - Transparansi timer sisa waktu santai tampil sopan di layar tamu.
    - Pesanan otomatis masuk ke antrean kasir dan barista secara real-time.
 
-3. **Desain Keramik Delft Klasik (*Delftware Ceramic*)**:
-   - Latar belakang motif ubin porselen Delftware Belanda (*Cobalt Blue* & *Porcelain Glaze*).
-   - Tipografi elegan dan kartu kaca (*glassmorphism*) yang nyaman di mata.
+3. **Desain Azure Bean Bersih & Elegan**:
+   - Nuansa warna biru kobalt (*Cobalt Blue*) dan abu-abu lembut yang bersih, rapi, dan nyaman di mata staf maupun pelanggan.
+   - Tata letak responsif untuk komputer kasir POS, tablet, dan smartphone.
