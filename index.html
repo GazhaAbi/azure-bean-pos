@@ -78,6 +78,15 @@
     .num-key { transition: all 0.1s; background: #fff; border: 1px solid #d4e2ed; }
     .num-key:active { background: #e1ebf3; transform: scale(0.95); }
     #toast { transition: all 0.3s ease; }
+  
+    /* Subtle geometric background pattern */
+    .app-bg-pattern {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(rgba(12,74,126,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12,74,126,0.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
   </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
@@ -234,7 +243,7 @@
       </div>
 
       <!-- Product Grid -->
-      <div class="flex-1 overflow-y-auto px-3 sm:px-6 pb-6">
+      <div class="flex-1 overflow-y-auto px-3 sm:px-6 pb-6 app-bg-pattern">
         <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           <!-- Loaded dynamically via DB -->
         </div>

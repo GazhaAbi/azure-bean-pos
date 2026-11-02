@@ -48,6 +48,15 @@
     .btn-primary:active { transform: scale(0.98); }
     #toast { transition: all 0.3s ease; }
     tr:hover td { background: #edf3f8; }
+  
+    /* Subtle geometric background pattern */
+    .app-bg-pattern {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(rgba(12,74,126,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12,74,126,0.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
   </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
@@ -153,7 +162,7 @@
   </div>
 
   <!-- Table -->
-  <div class="flex-1 overflow-auto px-3 sm:px-6 py-4">
+  <div class="flex-1 overflow-auto px-3 sm:px-6 py-4 app-bg-pattern">
     <table class="w-full border-collapse min-w-[640px]">
       <thead>
         <tr class="border-b border-outline-variant">

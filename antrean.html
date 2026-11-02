@@ -48,6 +48,15 @@
       #kitchen-ticket-modal { position: absolute; left: 0; top: 0; width: 100%; }
       .no-print { display: none !important; }
     }
+  
+    /* Subtle geometric background pattern */
+    .app-bg-pattern {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(rgba(12,74,126,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12,74,126,0.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
   </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
@@ -226,7 +235,7 @@
   </div>
 
   <!-- Orders Grid (items-start mencegah card meregang vertikal secara berlebihan) -->
-  <div class="flex-1 overflow-y-auto p-3 sm:p-5">
+  <div class="flex-1 overflow-y-auto p-3 sm:p-5 app-bg-pattern">
     <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
       <div class="col-span-3 flex flex-col items-center justify-center py-16 text-on-surface-variant">
         <span class="material-symbols-outlined text-5xl opacity-20">receipt_long</span>

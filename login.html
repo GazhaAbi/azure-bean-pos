@@ -39,11 +39,47 @@
     body { font-family: 'Inter', sans-serif; background: #f4f7fb; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    /* Subtle coffee bean / delftware geometric background */
+    .login-bg {
+      background-color: #edf3f9;
+      background-image:
+        radial-gradient(ellipse 24px 18px at 60px 50px, transparent 60%, rgba(12,74,126,0.03) 61%, rgba(12,74,126,0.03) 100%),
+        radial-gradient(ellipse 24px 18px at 140px 130px, transparent 60%, rgba(12,74,126,0.03) 61%, rgba(12,74,126,0.03) 100%),
+        linear-gradient(135deg, rgba(12,74,126,0.04) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(12,74,126,0.04) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(12,74,126,0.04) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(12,74,126,0.04) 25%, transparent 25%);
+      background-size: 200px 200px;
+      background-position: 0 0;
+    }
+
+    /* Decorative corner accents */
+    .login-wrapper::before,
+    .login-wrapper::after {
+      content: '';
+      position: fixed;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .login-wrapper::before {
+      top: -120px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(12,74,126,0.07) 0%, transparent 70%);
+    }
+    .login-wrapper::after {
+      bottom: -140px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(140,85,50,0.06) 0%, transparent 70%);
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#f6f9fc] via-[#edf3f9] to-[#dce8f4] flex items-center justify-center p-4">
+<body class="login-bg login-wrapper min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
 
-  <div class="w-full max-w-md bg-white rounded-3xl shadow-[0_16px_45px_rgba(12,74,126,0.08)] border border-[#c9d8e5]/80 p-8 flex flex-col gap-6">
+  <div class="w-full max-w-md bg-white/95 backdrop-blur-sm rounded-3xl shadow-[0_16px_45px_rgba(12,74,126,0.12)] border border-[#c9d8e5]/80 p-8 flex flex-col gap-6 relative z-10">
     <!-- Header / Logo Delftware Motif -->
     <div class="flex flex-col items-center text-center gap-3">
       <div class="w-24 h-24 rounded-full p-1 bg-white shadow-[0_8px_25px_rgba(12,74,126,0.14)] border-2 border-[#0c4a7e]/25 flex items-center justify-center transition-transform hover:scale-105">
