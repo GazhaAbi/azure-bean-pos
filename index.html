@@ -924,7 +924,12 @@ function populateOrderTableSelect() {
       let statusText = 'Kosong';
       if (t.status === 'occupied') {
         icon = '🔴';
-        statusText = `Terpakai (${t.customer_name || 'Tamu'})`;
+        let remText = '';
+        if (t.expires_at) {
+          const rem = Math.max(0, Math.ceil((t.expires_at - Date.now()) / 60000));
+          remText = rem > 0 ? ` · sisa ${rem}m` : ' · waktu habis!';
+        }
+        statusText = `Terpakai (${t.customer_name || 'Tamu'}${remText})`;
       } else if (t.status === 'cleaning') {
         icon = '🧹';
         statusText = 'Perlu Dibersihkan';

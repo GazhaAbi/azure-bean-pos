@@ -437,18 +437,41 @@ class JsonDatabaseManager {
     };
   }
 
-  // ─── TABLE MANAGEMENT (STATUS MEJA & KEBERSIHAN) ─────────────────────────
+  // ─── TABLE MANAGEMENT (STATUS MEJA & KEBERSIHAN & ATURAN WAKTU) ──────────
   getTables() {
     if (!localStorage.getItem('pos_tables')) {
-      localStorage.setItem('pos_tables', JSON.stringify(INITIAL_TABLES));
+      // Setel seed awal dengan timer aktif untuk demo
+      const now = Date.now();
+      const seeded = INITIAL_TABLES.map(t => {
+        if (t.name === 'Meja 03') {
+          return { ...t, duration_limit_minutes: 60, seated_at: now - (20 * 60 * 1000), expires_at: now + (40 * 60 * 1000) };
+        } else if (t.name === 'Meja 05') {
+          return { ...t, duration_limit_minutes: 60, seated_at: now - (50 * 60 * 1000), expires_at: now + (10 * 60 * 1000) };
+        } else if (t.name === 'Meja 06') {
+          return { ...t, duration_limit_minutes: 60, seated_at: now - (70 * 60 * 1000), expires_at: now - (10 * 60 * 1000) };
+        }
+        return { ...t, duration_limit_minutes: 60, seated_at: null, expires_at: null };
+      });
+      localStorage.setItem('pos_tables', JSON.stringify(seeded));
     }
+
     const stored = JSON.parse(localStorage.getItem('pos_tables') || '[]');
+    const now = Date.now();
+
     return stored.map(s => {
       const init = INITIAL_TABLES.find(i => i.id === s.id || (s.name && i.name.toLowerCase() === s.name.toLowerCase())) || {};
       const merged = { ...init, ...s };
       if (!merged.zone) merged.zone = init.zone || 'Area Tengah';
       if (!merged.shape) merged.shape = init.shape || 'rect';
       if (!merged.capacity) merged.capacity = init.capacity || 4;
+      if (!merged.duration_limit_minutes) merged.duration_limit_minutes = 60;
+
+      // Inisialisasi waktu jika status terpakai tapi belum punya expires_at
+      if (merged.status === 'occupied') {
+        if (!merged.seated_at) merged.seated_at = now - (15 * 60 * 1000);
+        if (!merged.expires_at) merged.expires_at = merged.seated_at + (merged.duration_limit_minutes * 60 * 1000);
+      }
+
       if (merged.customer_name) {
         merged.customer_name = merged.customer_name.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
       }
@@ -462,26 +485,34 @@ class JsonDatabaseManager {
     return this.getTables().find(t => t.name.toLowerCase() === cleanName || t.id.toLowerCase() === cleanName) || null;
   }
 
-  updateTableStatus(tableName, status, customerName = null, orderId = null) {
+  updateTableStatus(tableName, status, customerName = null, orderId = null, durationMinutes = 60) {
     const tables = this.getTables();
     const cleanTarget = tableName.replace(/[()]/g, '').trim().toLowerCase();
     const idx = tables.findIndex(t => t.name.toLowerCase() === cleanTarget || t.id.toLowerCase() === cleanTarget);
 
     if (idx !== -1) {
       tables[idx].status = status;
+      const now = Date.now();
+
       if (status === 'occupied') {
         const cleanCust = customerName ? customerName.replace(/\s*\([^)]*\)\s*/g, ' ').trim() : null;
         tables[idx].customer_name = cleanCust || tables[idx].customer_name || 'Pelanggan';
         tables[idx].order_id = orderId || tables[idx].order_id || null;
         tables[idx].updated_at = new Date().toTimeString().slice(0, 5);
+        tables[idx].duration_limit_minutes = durationMinutes || tables[idx].duration_limit_minutes || 60;
+        tables[idx].seated_at = now;
+        tables[idx].expires_at = now + (tables[idx].duration_limit_minutes * 60 * 1000);
       } else if (status === 'cleaning') {
-        // Meja selesai digunakan, menunggu dibersihkan
+        // Meja selesai digunakan atau waktu habis, menunggu dibersihkan
         tables[idx].updated_at = new Date().toTimeString().slice(0, 5);
       } else if (status === 'available') {
         // Meja sudah dibersihkan dan siap dipakai
         tables[idx].customer_name = null;
         tables[idx].order_id = null;
         tables[idx].updated_at = new Date().toTimeString().slice(0, 5);
+        tables[idx].seated_at = null;
+        tables[idx].expires_at = null;
+        tables[idx].duration_limit_minutes = 60;
       }
 
       localStorage.setItem('pos_tables', JSON.stringify(tables));
@@ -493,6 +524,51 @@ class JsonDatabaseManager {
       return { success: true, message: `Status ${tables[idx].name} diperbarui menjadi "${status}".`, table: tables[idx] };
     }
     return { success: false, message: `Meja ${tableName} tidak ditemukan.` };
+  }
+
+  // Perpanjang waktu santai tamu (+15, +30, atau +60 menit)
+  extendTableTimer(tableName, extraMinutes = 30) {
+    const tables = this.getTables();
+    const cleanTarget = tableName.replace(/[()]/g, '').trim().toLowerCase();
+    const idx = tables.findIndex(t => t.name.toLowerCase() === cleanTarget || t.id.toLowerCase() === cleanTarget);
+
+    if (idx !== -1 && tables[idx].status === 'occupied') {
+      const now = Date.now();
+      const base = tables[idx].expires_at && tables[idx].expires_at > now ? tables[idx].expires_at : now;
+      tables[idx].expires_at = base + (extraMinutes * 60 * 1000);
+      tables[idx].duration_limit_minutes = (tables[idx].duration_limit_minutes || 60) + extraMinutes;
+
+      localStorage.setItem('pos_tables', JSON.stringify(tables));
+      try {
+        window.dispatchEvent(new CustomEvent('pos_tables_updated', { detail: tables[idx] }));
+      } catch (e) {}
+
+      return { success: true, message: `Waktu ${tables[idx].name} diperpanjang +${extraMinutes} menit.`, table: tables[idx] };
+    }
+    return { success: false, message: `Meja ${tableName} tidak sedang terpakai.` };
+  }
+
+  // Cek timer meja secara otomatis: jika waktu habis, alihkan ke 'cleaning'
+  checkTableTimers() {
+    const tables = this.getTables();
+    const now = Date.now();
+    let updated = false;
+
+    tables.forEach(t => {
+      if (t.status === 'occupied' && t.expires_at && now >= t.expires_at) {
+        t.status = 'cleaning';
+        t.updated_at = new Date().toTimeString().slice(0, 5);
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      localStorage.setItem('pos_tables', JSON.stringify(tables));
+      try {
+        window.dispatchEvent(new CustomEvent('pos_tables_updated', { detail: { reason: 'timer_expired' } }));
+      } catch (e) {}
+    }
+    return tables;
   }
 
   markTableCleaning(tableName) {

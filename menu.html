@@ -101,6 +101,15 @@
             class="bg-transparent border-none outline-none text-xs text-on-surface w-full p-0 focus:ring-0 placeholder-on-surface-variant/60 font-medium">
         </div>
       </div>
+
+      <!-- Banner Sisa Waktu Santai Meja -->
+      <div id="cust-timer-banner" class="hidden mt-2 p-2 rounded-xl bg-primary/10 border border-primary/20 items-center justify-between text-xs">
+        <div class="flex items-center gap-1.5 text-primary font-bold">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          <span id="cust-timer-text">Sisa Waktu Santai: 48 Menit</span>
+        </div>
+        <span class="text-[10px] text-primary/80 font-semibold">Batas 60 Mnt</span>
+      </div>
     </header>
 
     <!-- ─── SEARCH & FILTER KATEGORI ─── -->
@@ -287,11 +296,55 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadCustomerProducts();
       syncCustomerTableOptions();
+      updateCustomerTableTimer();
+
       // Update badge meja saat dropdown meja diubah
       document.getElementById('cust-table').addEventListener('change', (e) => {
         document.getElementById('sheet-table-badge').textContent = e.target.value;
+        updateCustomerTableTimer();
       });
+
+      window.addEventListener('storage', () => {
+        syncCustomerTableOptions();
+        updateCustomerTableTimer();
+      });
+      window.addEventListener('pos_tables_updated', () => {
+        syncCustomerTableOptions();
+        updateCustomerTableTimer();
+      });
+      setInterval(updateCustomerTableTimer, 3000);
     });
+
+    function updateCustomerTableTimer() {
+      const banner = document.getElementById('cust-timer-banner');
+      const timerText = document.getElementById('cust-timer-text');
+      if (!banner || !timerText) return;
+
+      const selTable = document.getElementById('cust-table').value;
+      if (!selTable || selTable === 'Take Away') {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+        return;
+      }
+
+      const tables = typeof DB !== 'undefined' && DB.getTables ? DB.getTables() : [];
+      const t = tables.find(item => item.name === selTable);
+      if (t && t.status === 'occupied' && t.expires_at) {
+        const diffMs = t.expires_at - Date.now();
+        const remMins = Math.max(0, Math.ceil(diffMs / 60000));
+        if (remMins > 0) {
+          timerText.textContent = `⏱️ Sisa Waktu Santai: ${remMins} Menit`;
+          banner.className = `mt-2 p-2 rounded-xl border flex items-center justify-between text-xs ${remMins <= 15 ? 'bg-amber-50 border-amber-300 text-amber-900 animate-pulse' : 'bg-primary/10 border-primary/20 text-primary'}`;
+        } else {
+          timerText.textContent = `⚠️ Waktu Santai Meja Telah Selesai`;
+          banner.className = 'mt-2 p-2 rounded-xl border border-red-300 bg-red-50 text-red-900 flex items-center justify-between text-xs animate-pulse';
+        }
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+      }
+    }
 
     function syncCustomerTableOptions() {
       const select = document.getElementById('cust-table');
