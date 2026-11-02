@@ -71,49 +71,54 @@
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
 
 <!-- ═══════════════════════════════════════════════════════ SIDEBAR NAVIGASI KIRI -->
-<aside id="sidebar" class="w-20 h-screen bg-white shadow-[1px_0_0_#c9d8e5] flex flex-col items-center py-4 gap-1 z-50 shrink-0">
-  <!-- Logo Azure Bean -->
-  <a href="index.html" class="w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 flex items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Kembali ke Kasir">
+<!-- ═══════════════════════════════════════════════════════ SIDEBAR (LAPTOP/TABLET) & BOTTOM NAV (SMARTPHONE) -->
+<aside id="sidebar" class="fixed md:static bottom-0 inset-x-0 md:inset-auto w-full md:w-20 h-16 md:h-screen bg-white md:bg-white border-t md:border-t-0 md:border-r border-outline-variant shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-[1px_0_0_#c9d8e5] flex flex-row md:flex-col items-center justify-around md:justify-start px-2 py-1 md:py-4 gap-1 z-50 shrink-0">
+  <!-- Logo Azure Bean (Hanya Tampil di Tablet & Laptop) -->
+  <a href="index.html" class="hidden md:flex w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean POS">
     <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
   </a>
 
-  <!-- Menu Navigasi -->
-  <nav class="flex flex-col items-center gap-1 w-full px-2">
-    <a href="index.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Kasir POS">
-      <span class="material-symbols-outlined text-xl">point_of_sale</span>
-      <span class="text-[10px] font-medium whitespace-nowrap">Kasir</span>
-    </a>
-
-    <!-- Denah Meja (AKTIF) -->
-    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer transition-colors" title="Denah & Status Meja">
-      <div class="relative">
-        <span class="material-symbols-outlined filled text-xl">table_restaurant</span>
-        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+  <!-- Menu Navigasi Responsif -->
+  <nav class="flex flex-row md:flex-col items-center justify-around md:justify-start gap-1 w-full md:px-2">
+    <a href="index.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Kasir">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">point_of_sale</span>
+        
       </div>
-      <span class="text-[10px] font-bold whitespace-nowrap">Meja</span>
+      <span class="text-[10px] whitespace-nowrap">Kasir</span>
     </a>
-
-    <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Katalog Menu">
-      <span class="material-symbols-outlined text-xl">grid_view</span>
-      <span class="text-[10px] font-medium whitespace-nowrap">Katalog</span>
-    </a>
-
-    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Antrean Pesanan">
-      <div class="relative">
-        <span class="material-symbols-outlined text-xl">receipt_long</span>
-        <span id="sidebar-pending-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+    <a href="meja.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl bg-primary/10 text-primary font-bold cursor-pointer transition-colors" title="Meja">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined filled text-xl md:text-2xl">table_restaurant</span>
+        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
       </div>
-      <span class="text-[10px] font-medium whitespace-nowrap">Antrean</span>
+      <span class="text-[10px] whitespace-nowrap">Meja</span>
     </a>
-
-    <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Statistik & Laporan">
-      <span class="material-symbols-outlined text-xl">bar_chart</span>
-      <span class="text-[10px] font-medium whitespace-nowrap">Statistik</span>
+    <a href="katalog.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Katalog">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">grid_view</span>
+        
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Katalog</span>
+    </a>
+    <a href="antrean.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Antrean">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">receipt_long</span>
+        <span id="sidebar-pending-badge" class="hidden absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Antrean</span>
+    </a>
+    <a href="statistik.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Statistik">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">bar_chart</span>
+        
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Statistik</span>
     </a>
   </nav>
 
-  <!-- Logout & Profil Kasir -->
-  <div class="mt-auto flex flex-col items-center gap-2 w-full px-2 pb-2">
+  <!-- Profil Kasir & Logout (Tampil di Sidebar Tablet & Laptop) -->
+  <div class="hidden md:flex mt-auto flex-col items-center gap-2 w-full px-2 pb-2">
     <button onclick="handleLogout()" title="Keluar / Logout"
       class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors">
       <span class="material-symbols-outlined text-xl">logout</span>
@@ -124,10 +129,10 @@
 </aside>
 
 <!-- ═══════════════════════════════════════════════════════ KONTEN UTAMA -->
-<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<main class="flex-1 flex flex-col h-screen overflow-hidden pb-16 md:pb-0">
 
   <!-- ─── HEADER ATAS ─── -->
-  <header class="bg-white border-b border-outline-variant px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
+  <header class="bg-white border-b border-outline-variant px-3 sm:px-6 py-2.5 sm:py-3.5 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
     <!-- Judul Halaman -->
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -179,6 +184,14 @@
         <span>Kasir POS</span>
       </a>
     </div>
+  
+    <!-- Mobile Kasir & Logout Shortcut -->
+    <div class="flex md:hidden items-center gap-1.5 ml-auto">
+      <div id="user-avatar-mobile" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[11px] uppercase shadow-xs" title="Kasir">K1</div>
+      <button onclick="handleLogout()" title="Keluar / Logout" class="w-8 h-8 rounded-xl text-on-surface-variant hover:text-red-600 hover:bg-red-50 flex items-center justify-center">
+        <span class="material-symbols-outlined text-lg">logout</span>
+      </button>
+    </div>
   </header>
 
   <!-- ─── SUB-HEADER: FILTER CEPAT & LEGENDA WAKTU ─── -->
@@ -221,7 +234,7 @@
   </div>
 
   <!-- ─── GRID DENAH MEJA SEDERHANA & TIMER LIVE ─── -->
-  <div class="flex-1 overflow-y-auto p-6 cafe-floor-bg">
+  <div class="flex-1 overflow-y-auto p-3 sm:p-6 cafe-floor-bg">
     <div class="max-w-6xl mx-auto flex flex-col gap-5">
 
       <!-- Panduan Singkat Aturan Waktu -->
@@ -335,6 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!currentUser) return;
 
   document.getElementById('user-avatar').textContent = currentUser.name.slice(0, 2).toUpperCase();
+  const mobAv = document.getElementById('user-avatar-mobile');
+  if (mobAv) mobAv.textContent = currentUser.name.slice(0, 2).toUpperCase();
   document.getElementById('user-avatar').title = `${currentUser.name} (${currentUser.role})`;
 
   loadTables();

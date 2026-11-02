@@ -83,46 +83,56 @@
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
 
 <!-- ═══════════════════════════════════════════════════════ LEFT NAVIGATION SIDEBAR -->
-<aside id="sidebar" class="w-20 h-screen bg-white shadow-[1px_0_0_#c9d8e5] flex flex-col items-center py-4 gap-1 z-50 shrink-0">
-  <!-- Delftware Azure Bean Emblem Logo -->
-  <div class="w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 flex items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean Coffee">
+<!-- ═══════════════════════════════════════════════════════ SIDEBAR (LAPTOP/TABLET) & BOTTOM NAV (SMARTPHONE) -->
+<aside id="sidebar" class="fixed md:static bottom-0 inset-x-0 md:inset-auto w-full md:w-20 h-16 md:h-screen bg-white md:bg-white border-t md:border-t-0 md:border-r border-outline-variant shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-[1px_0_0_#c9d8e5] flex flex-row md:flex-col items-center justify-around md:justify-start px-2 py-1 md:py-4 gap-1 z-50 shrink-0">
+  <!-- Logo Azure Bean (Hanya Tampil di Tablet & Laptop) -->
+  <a href="index.html" class="hidden md:flex w-12 h-12 rounded-full p-0.5 bg-white shadow-md border-2 border-primary/25 items-center justify-center mb-4 shrink-0 hover:scale-105 transition-transform" title="Azure Bean POS">
     <img src="assets/img/azure_bean_logo.jpg" alt="Azure Bean Logo" class="w-full h-full object-cover rounded-full">
-  </div>
+  </a>
 
-  <!-- Nav Items -->
-  <nav class="flex flex-col items-center gap-1 w-full px-2">
-    <a href="index.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer">
-      <span class="material-symbols-outlined filled text-xl">point_of_sale</span>
-      <span class="text-[10px] font-semibold">Kasir</span>
-    </a>
-    <a href="meja.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Denah & Status Meja">
-      <div class="relative">
-        <span class="material-symbols-outlined text-xl">table_restaurant</span>
-        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+  <!-- Menu Navigasi Responsif -->
+  <nav class="flex flex-row md:flex-col items-center justify-around md:justify-start gap-1 w-full md:px-2">
+    <a href="index.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl bg-primary/10 text-primary font-bold cursor-pointer transition-colors" title="Kasir">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined filled text-xl md:text-2xl">point_of_sale</span>
+        
       </div>
-      <span class="text-[10px] font-medium whitespace-nowrap">Meja</span>
+      <span class="text-[10px] whitespace-nowrap">Kasir</span>
     </a>
-    <a href="katalog.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
-      <span class="material-symbols-outlined text-xl">grid_view</span>
-      <span class="text-[10px] font-medium">Katalog</span>
-    </a>
-    <a href="antrean.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Antrean Pesanan">
-      <div class="relative">
-        <span class="material-symbols-outlined text-xl">receipt_long</span>
-        <span id="sidebar-pending-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+    <a href="meja.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Meja">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">table_restaurant</span>
+        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
       </div>
-      <span class="text-[10px] font-medium whitespace-nowrap">Antrean</span>
+      <span class="text-[10px] whitespace-nowrap">Meja</span>
     </a>
-    <a href="statistik.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
-      <span class="material-symbols-outlined text-xl">bar_chart</span>
-      <span class="text-[10px] font-medium">Statistik</span>
+    <a href="katalog.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Katalog">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">grid_view</span>
+        
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Katalog</span>
+    </a>
+    <a href="antrean.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Antrean">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">receipt_long</span>
+        <span id="sidebar-pending-badge" class="hidden absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Antrean</span>
+    </a>
+    <a href="statistik.html" class="flex-1 md:flex-none md:w-full flex flex-col items-center gap-0.5 py-1.5 md:py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container font-medium cursor-pointer transition-colors" title="Statistik">
+      <div class="relative inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl md:text-2xl">bar_chart</span>
+        
+      </div>
+      <span class="text-[10px] whitespace-nowrap">Statistik</span>
     </a>
   </nav>
 
-  <!-- Bottom: User & Logout -->
-  <div class="mt-auto flex flex-col items-center gap-2 w-full px-2 pb-2">
+  <!-- Profil Kasir & Logout (Tampil di Sidebar Tablet & Laptop) -->
+  <div class="hidden md:flex mt-auto flex-col items-center gap-2 w-full px-2 pb-2">
     <button onclick="handleLogout()" title="Keluar / Logout"
-      class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors">
+      class="w-10 h-10 rounded-2xl text-on-surface-variant hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors">
       <span class="material-symbols-outlined text-xl">logout</span>
     </button>
     <div id="user-avatar" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase"
@@ -131,49 +141,56 @@
 </aside>
 
 <!-- ═══════════════════════════════════════════════════════ MAIN CONTENT AREA -->
-<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<main class="flex-1 flex flex-col h-screen overflow-hidden pb-16 md:pb-0">
 
   <!-- ─── TOP HEADER ─── -->
-  <header class="bg-white border-b border-outline-variant px-6 py-3 flex items-center gap-4 shrink-0">
-    <div class="flex items-center gap-2.5">
+  <header class="bg-white border-b border-outline-variant px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 shrink-0">
+    <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
       <div class="w-8 h-8 rounded-full p-0.5 bg-white border border-primary/25 shadow-xs overflow-hidden shrink-0">
         <img src="assets/img/azure_bean_logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-full">
       </div>
       <div class="flex flex-col">
-        <h1 class="text-headline-sm font-extrabold text-[#0c4a7e] tracking-tight">Azure Bean Coffee</h1>
-        <p class="text-body-sm text-on-surface-variant" id="shift-info"><span id="header-user-name">Kasir</span> · Shift Aktif · <span id="current-time"></span></p>
+        <h1 class="text-sm sm:text-headline-sm font-extrabold text-[#0c4a7e] tracking-tight leading-tight">Azure Bean Coffee</h1>
+        <p class="text-[10px] sm:text-body-sm text-on-surface-variant leading-none" id="shift-info"><span id="header-user-name">Kasir</span> · Shift Aktif · <span id="current-time"></span></p>
       </div>
     </div>
-    <div class="flex-1 max-w-md ml-4">
-      <div class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded-xl">
-        <span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
-        <input type="text" id="search-input" placeholder="Cari produk..." class="bg-transparent border-none outline-none flex-1 text-body-md text-on-surface placeholder-on-surface-variant">
+    <div class="flex-1 max-w-xs md:max-w-md mx-2 sm:mx-4">
+      <div class="flex items-center gap-1.5 sm:gap-2 bg-surface-container px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl">
+        <span class="material-symbols-outlined text-on-surface-variant text-base sm:text-xl">search</span>
+        <input type="text" id="search-input" placeholder="Cari produk..." class="bg-transparent border-none outline-none flex-1 text-xs sm:text-body-md text-on-surface placeholder-on-surface-variant">
       </div>
     </div>
-    <div class="ml-auto flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
       <!-- Shortcut Denah Meja -->
       <a href="meja.html" title="Buka Denah & Display Meja Kafe"
-        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
+        class="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
         <span class="material-symbols-outlined text-base text-primary">table_restaurant</span>
         <span class="hidden md:inline">Denah Meja</span>
         <span id="header-cleaning-badge" class="hidden px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px] font-bold animate-pulse">0</span>
       </a>
-      <div class="w-px h-8 bg-outline-variant"></div>
+      <div class="hidden sm:block w-px h-6 sm:h-8 bg-outline-variant"></div>
       <a href="menu.html" target="_blank" title="Buka Tampilan Menu Smartphone Pelanggan"
-        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-all">
+        class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-all">
         <span class="material-symbols-outlined text-base">smartphone</span>
         <span class="hidden md:inline">Mode Pelanggan</span>
       </a>
-      <div class="w-px h-8 bg-outline-variant"></div>
-      <div class="text-right">
-        <p class="text-label-sm text-on-surface-variant">Pendapatan Hari Ini</p>
-        <p class="text-headline-sm font-bold text-primary" id="today-revenue">Rp 0</p>
+      <div class="hidden sm:block w-px h-6 sm:h-8 bg-outline-variant"></div>
+      <div class="text-right hidden sm:block">
+        <p class="text-[10px] sm:text-label-sm text-on-surface-variant leading-tight">Pendapatan Hari Ini</p>
+        <p class="text-xs sm:text-headline-sm font-bold text-primary leading-tight" id="today-revenue">Rp 0</p>
       </div>
-      <div class="w-px h-8 bg-outline-variant"></div>
-      <button onclick="resetDataPrompt()" title="Reset Data Demo" class="flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant hover:text-primary px-2 py-1 rounded-lg hover:bg-surface-container">
+      <div class="hidden md:block w-px h-8 bg-outline-variant"></div>
+      <button onclick="resetDataPrompt()" title="Reset Data Demo" class="hidden md:flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant hover:text-primary px-2 py-1 rounded-lg hover:bg-surface-container">
         <span class="material-symbols-outlined text-base">restart_alt</span>
         <span>Reset</span>
       </button>
+      <!-- Mobile Profile & Logout -->
+      <div class="flex md:hidden items-center gap-1.5">
+        <div id="user-avatar-mobile" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[11px] uppercase shadow-xs" title="Kasir">K1</div>
+        <button onclick="handleLogout()" title="Keluar / Logout" class="w-8 h-8 rounded-xl text-on-surface-variant hover:text-red-600 hover:bg-red-50 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -183,7 +200,7 @@
     <!-- ══ LEFT: PRODUCT CATALOG (65%) ══ -->
     <section class="flex-1 flex flex-col overflow-hidden">
       <!-- Category Filter with 3D Icons -->
-      <div class="px-6 py-2.5 flex items-center gap-2 shrink-0 overflow-x-auto">
+      <div class="px-3 sm:px-6 py-2 sm:py-2.5 flex items-center gap-2 shrink-0 overflow-x-auto">
         <button onclick="filterCategory('all')" data-cat="all" class="cat-btn px-4 py-1.5 rounded-full bg-primary text-white font-bold text-xs flex items-center gap-2 whitespace-nowrap shadow-sm border border-primary transition-all">
           <span class="w-6 h-6 rounded-full overflow-hidden bg-white shadow-xs shrink-0 p-0.5 border border-primary/25 flex items-center justify-center">
             <img src="assets/img/icons/cat_all.svg" alt="Semua" class="w-full h-full object-contain">
@@ -217,15 +234,25 @@
       </div>
 
       <!-- Product Grid -->
-      <div class="flex-1 overflow-y-auto px-6 pb-6">
-        <div id="product-grid" class="grid grid-cols-3 xl:grid-cols-4 gap-4">
+      <div class="flex-1 overflow-y-auto px-3 sm:px-6 pb-6">
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           <!-- Loaded dynamically via DB -->
         </div>
       </div>
     </section>
 
     <!-- ══ RIGHT: ORDER TICKET (35%, min 360px) ══ -->
-    <aside class="w-[360px] shrink-0 flex flex-col h-full bg-white border-l border-outline-variant overflow-hidden">
+    <aside id="cart-sidebar" class="fixed inset-0 z-50 md:static md:w-[320px] lg:w-[360px] xl:w-[380px] shrink-0 flex flex-col h-full bg-white md:border-l border-outline-variant overflow-hidden transition-transform duration-300 transform translate-y-full md:translate-y-0">
+      <!-- Mobile Cart Drawer Top Bar (Hanya di Smartphone) -->
+      <div class="md:hidden flex items-center justify-between px-4 py-3 bg-[#0c4a7e] text-white shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-xl">shopping_cart</span>
+          <span class="font-bold text-sm">Pesanan Kasir</span>
+        </div>
+        <button type="button" onclick="toggleMobileCart(false)" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30" title="Tutup">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
       <!-- Cart Header -->
       <div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between shrink-0">
         <div>
@@ -317,6 +344,23 @@
         </button>
       </div>
     </aside>
+  </div>
+
+  <!-- ══ FLOATING MOBILE CART BAR (Hanya di Layar Smartphone < md Saat Ada Item) ══ -->
+  <div id="mobile-cart-bar" class="hidden fixed bottom-18 inset-x-3 z-40 bg-[#0c4a7e] text-white px-4 py-3 rounded-2xl shadow-2xl items-center justify-between md:hidden cursor-pointer active:scale-98 transition-all border border-white/20" onclick="toggleMobileCart(true)">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+        <span class="material-symbols-outlined text-lg">shopping_cart</span>
+      </div>
+      <div>
+        <p class="text-[11px] font-semibold text-white/80 leading-none mb-0.5"><span id="mobile-cart-count">0</span> Menu Dipilih</p>
+        <p class="text-sm font-extrabold text-white leading-tight" id="mobile-cart-total">Rp 0</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 bg-white text-[#0c4a7e] px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs">
+      <span>Lihat Pesanan</span>
+      <span class="material-symbols-outlined text-xs">arrow_forward</span>
+    </div>
   </div>
 </main>
 
@@ -685,7 +729,35 @@ function updateNote(productId, note) {
   if (item) { item.notes = note; saveCart(); }
 }
 
+function toggleMobileCart(show) {
+  const cartSidebar = document.getElementById('cart-sidebar');
+  if (!cartSidebar) return;
+  if (show) {
+    cartSidebar.classList.remove('translate-y-full');
+    cartSidebar.classList.add('translate-y-0');
+  } else {
+    cartSidebar.classList.add('translate-y-full');
+    cartSidebar.classList.remove('translate-y-0');
+  }
+}
+
 function updateTotals(subtotal, tax, total) {
+  // Sync ke Floating Mobile Cart Bar
+  const mobileBar = document.getElementById('mobile-cart-bar');
+  const mobileCount = document.getElementById('mobile-cart-count');
+  const mobileTotal = document.getElementById('mobile-cart-total');
+  if (mobileBar && mobileCount && mobileTotal) {
+    const totalItems = cart.reduce((s, c) => s + c.quantity, 0);
+    mobileCount.textContent = totalItems;
+    mobileTotal.textContent = formatRp(total);
+    if (totalItems > 0) {
+      mobileBar.classList.remove('hidden');
+      mobileBar.classList.add('flex');
+    } else {
+      mobileBar.classList.add('hidden');
+      mobileBar.classList.remove('flex');
+    }
+  }
   document.getElementById('subtotal-display').textContent = formatRp(subtotal);
   document.getElementById('tax-display').textContent = formatRp(tax);
   document.getElementById('total-display').textContent = formatRp(total);
@@ -828,7 +900,7 @@ function showReceipt(order, amountPaid) {
     <p class="text-center text-label-sm text-on-surface-variant mt-1">Terima kasih sudah berkunjung! ☕</p>
   `;
 
-  document.getElementById('receipt-modal').classList.remove('hidden');
+  toggleMobileCart(false); document.getElementById('receipt-modal').classList.remove('hidden');
 }
 
 function closeReceiptAndReset() {
