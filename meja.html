@@ -79,10 +79,12 @@
     </a>
 
     <!-- Denah Meja (AKTIF) -->
-    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer relative" title="Denah Meja">
-      <span class="material-symbols-outlined filled text-xl">table_restaurant</span>
-      <span class="text-[10px] font-bold">Denah</span>
-      <span id="sidebar-cleaning-badge" class="hidden absolute top-1 right-2 bg-amber-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer transition-colors" title="Denah & Status Meja">
+      <div class="relative">
+        <span class="material-symbols-outlined filled text-xl">table_restaurant</span>
+        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] font-bold whitespace-nowrap">Meja</span>
     </a>
 
     <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Katalog Menu">
@@ -90,10 +92,12 @@
       <span class="text-[10px] font-medium">Katalog</span>
     </a>
 
-    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer relative transition-colors" title="Antrean Pesanan">
-      <span class="material-symbols-outlined text-xl">receipt_long</span>
-      <span class="text-[10px] font-medium">Antrean</span>
-      <span id="sidebar-pending-badge" class="hidden absolute top-1 right-2 bg-amber-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Antrean Pesanan">
+      <div class="relative">
+        <span class="material-symbols-outlined text-xl">receipt_long</span>
+        <span id="sidebar-pending-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] font-medium whitespace-nowrap">Antrean</span>
     </a>
 
     <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Statistik & Laporan">

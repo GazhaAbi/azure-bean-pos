@@ -58,17 +58,23 @@
       <span class="material-symbols-outlined text-xl">point_of_sale</span>
       <span class="text-[10px] font-medium">Kasir</span>
     </a>
-    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer relative" title="Denah & Display Meja">
-      <span class="material-symbols-outlined text-xl">table_restaurant</span>
-      <span class="text-[10px] font-medium">Meja</span>
+    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Denah & Status Meja">
+      <div class="relative">
+        <span class="material-symbols-outlined text-xl">table_restaurant</span>
+        <span id="sidebar-cleaning-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] font-medium whitespace-nowrap">Meja</span>
     </a>
     <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
       <span class="material-symbols-outlined text-xl">grid_view</span>
       <span class="text-[10px] font-medium">Katalog</span>
     </a>
-    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
-      <span class="material-symbols-outlined text-xl">receipt_long</span>
-      <span class="text-[10px] font-medium">Antrean</span>
+    <a href="antrean.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors" title="Antrean Pesanan">
+      <div class="relative">
+        <span class="material-symbols-outlined text-xl">receipt_long</span>
+        <span id="sidebar-pending-badge" class="hidden absolute -top-1 -right-2 bg-amber-500 text-white text-[9px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center animate-pulse shadow-xs">0</span>
+      </div>
+      <span class="text-[10px] font-medium whitespace-nowrap">Antrean</span>
     </a>
     <a href="statistik.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl bg-primary/10 text-primary cursor-pointer">
       <span class="material-symbols-outlined filled text-xl">bar_chart</span>
@@ -208,7 +214,37 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('user-avatar').title = `${currentUser.name} (${currentUser.role})`;
 
   loadStats();
+  updateSidebarBadges();
+
+  window.addEventListener('storage', () => updateSidebarBadges());
+  window.addEventListener('pos_tables_updated', () => updateSidebarBadges());
+  window.addEventListener('pos_orders_updated', () => updateSidebarBadges());
+  setInterval(updateSidebarBadges, 3000);
 });
+
+function updateSidebarBadges() {
+  const cleanCount = DB.getTables ? DB.getTables().filter(t => t.status === 'cleaning').length : 0;
+  const badge = document.getElementById('sidebar-cleaning-badge');
+  if (badge) {
+    if (cleanCount > 0) {
+      badge.textContent = cleanCount;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  const pending = DB.getPendingSelfOrdersCount ? DB.getPendingSelfOrdersCount() : 0;
+  const pBadge = document.getElementById('sidebar-pending-badge');
+  if (pBadge) {
+    if (pending > 0) {
+      pBadge.textContent = pending;
+      pBadge.classList.remove('hidden');
+    } else {
+      pBadge.classList.add('hidden');
+    }
+  }
+}
 
 function handleLogout() {
   if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.name}?`)) {
