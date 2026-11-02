@@ -286,11 +286,38 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadCustomerProducts();
+      syncCustomerTableOptions();
       // Update badge meja saat dropdown meja diubah
       document.getElementById('cust-table').addEventListener('change', (e) => {
         document.getElementById('sheet-table-badge').textContent = e.target.value;
       });
     });
+
+    function syncCustomerTableOptions() {
+      const select = document.getElementById('cust-table');
+      if (!select) return;
+      let tables = [];
+      try {
+        if (typeof DB !== 'undefined' && typeof DB.getTables === 'function') {
+          tables = DB.getTables();
+        } else {
+          tables = JSON.parse(localStorage.getItem('pos_tables') || '[]');
+        }
+      } catch (e) {}
+
+      if (!tables.length) return;
+
+      const currentVal = select.value || 'Meja 03';
+      select.innerHTML = [
+        ...tables.map(t => {
+          let statusBadge = '';
+          if (t.status === 'occupied') statusBadge = ' (Sedang Terpakai)';
+          else if (t.status === 'cleaning') statusBadge = ' (Sedang Dibersihkan)';
+          return `<option value="${t.name}" ${t.name === currentVal ? 'selected' : ''}>${t.name}${statusBadge}</option>`;
+        }),
+        `<option value="Take Away">Bawa Pulang (Take Away)</option>`
+      ].join('');
+    }
 
     // ═══════════════════════════════════════════════════════ PRODUCTS FETCH VIA DB (JSON)
     const FALLBACK_PRODUCTS = [
@@ -609,8 +636,14 @@
         }
 
         if (result.success) {
+          if (tableName && tableName.startsWith('Meja')) {
+            if (typeof DB !== 'undefined' && typeof DB.updateTableStatus === 'function') {
+              DB.updateTableStatus(tableName, 'occupied', fullCustomerName, result.data.id);
+            }
+          }
           closeCartSheet();
           showDigitalReceipt(result.data, tableName, customerInput);
+          syncCustomerTableOptions();
           if (typeof DB !== 'undefined' && typeof DB.getAvailableProducts === 'function') {
             custProducts = DB.getAvailableProducts();
           }

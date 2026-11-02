@@ -701,13 +701,45 @@ function renderOrders(orders) {
         </button>
       `;
     } else {
-      actionButtons = `
-        <button onclick="event.stopPropagation(); openDetail('${o.id}')"
-          class="w-full h-8 rounded-xl bg-white hover:bg-surface-container border border-outline-variant/60 text-on-surface-variant hover:text-on-surface text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
-          <span class="material-symbols-outlined text-sm">receipt_long</span>
-          <span>Lihat Rincian Nota</span>
-        </button>
-      `;
+      const tableInfo = tableName && tableName.startsWith('Meja') ? DB.getTableByName(tableName) : null;
+      if (tableInfo && tableInfo.status === 'cleaning') {
+        actionButtons = `
+          <div class="flex flex-col gap-1.5 w-full">
+            <button onclick="event.stopPropagation(); markTableCleanedFromAntrean('${tableName}')"
+              class="w-full h-8.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all animate-pulse">
+              <span class="material-symbols-outlined text-base">cleaning_services</span>
+              <span>${tableName} Selesai · Tandai Sudah Bersih ✨</span>
+            </button>
+            <button onclick="event.stopPropagation(); openDetail('${o.id}')"
+              class="w-full h-7 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-xs">receipt_long</span>
+              <span>Lihat Rincian Nota</span>
+            </button>
+          </div>
+        `;
+      } else if (tableInfo && tableInfo.status === 'available') {
+        actionButtons = `
+          <div class="flex items-center justify-between gap-2 w-full">
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-xl flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">check_circle</span>
+              <span>${tableName} Bersih</span>
+            </span>
+            <button onclick="event.stopPropagation(); openDetail('${o.id}')"
+              class="flex-1 h-8 rounded-xl bg-white hover:bg-surface-container border border-outline-variant/60 text-on-surface-variant hover:text-on-surface text-xs font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-xs">receipt_long</span>
+              <span>Rincian Nota</span>
+            </button>
+          </div>
+        `;
+      } else {
+        actionButtons = `
+          <button onclick="event.stopPropagation(); openDetail('${o.id}')"
+            class="w-full h-8 rounded-xl bg-white hover:bg-surface-container border border-outline-variant/60 text-on-surface-variant hover:text-on-surface text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-sm">receipt_long</span>
+            <span>Lihat Rincian Nota</span>
+          </button>
+        `;
+      }
     }
 
     // 4. Items rendering
@@ -779,6 +811,11 @@ function changeStatus(orderId, newStatus) {
   } else {
     alert(res.message);
   }
+}
+
+function markTableCleanedFromAntrean(tableName) {
+  DB.markTableCleaned(tableName);
+  loadOrders();
 }
 
 function handleCancelOrder(orderId) {
