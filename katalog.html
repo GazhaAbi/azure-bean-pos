@@ -48,6 +48,14 @@
     .btn-primary:active { transform: scale(0.98); }
     #toast { transition: all 0.3s ease; }
     tr:hover td { background: #edf3f8; }
+
+    /* Motif Keramik Delft Asli */
+    .delft-tile-bg {
+      background-color: #f2f6fa;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23f2f6fa'/%3E%3Crect x='0.5' y='0.5' width='95' height='95' fill='none' stroke='%230c4a7e' stroke-width='1' stroke-opacity='0.12' rx='1.5'/%3E%3Cg fill='%230c4a7e' fill-opacity='0.16'%3E%3Cpath d='M0,0 L16,0 C13,4 8,9 0,11 Z'/%3E%3Cpath d='M0,0 L0,16 C4,13 9,8 11,0 Z'/%3E%3Ccircle cx='10' cy='10' r='1.8'/%3E%3C/g%3E%3Cg transform='translate(96,0) scale(-1,1)' fill='%230c4a7e' fill-opacity='0.16'%3E%3Cpath d='M0,0 L16,0 C13,4 8,9 0,11 Z'/%3E%3Cpath d='M0,0 L0,16 C4,13 9,8 11,0 Z'/%3E%3Ccircle cx='10' cy='10' r='1.8'/%3E%3C/g%3E%3Cg transform='translate(0,96) scale(1,-1)' fill='%230c4a7e' fill-opacity='0.16'%3E%3Cpath d='M0,0 L16,0 C13,4 8,9 0,11 Z'/%3E%3Cpath d='M0,0 L0,16 C4,13 9,8 11,0 Z'/%3E%3Ccircle cx='10' cy='10' r='1.8'/%3E%3C/g%3E%3Cg transform='translate(96,96) scale(-1,-1)' fill='%230c4a7e' fill-opacity='0.16'%3E%3Cpath d='M0,0 L16,0 C13,4 8,9 0,11 Z'/%3E%3Cpath d='M0,0 L0,16 C4,13 9,8 11,0 Z'/%3E%3Ccircle cx='10' cy='10' r='1.8'/%3E%3C/g%3E%3Ccircle cx='48' cy='48' r='16' fill='none' stroke='%230c4a7e' stroke-width='0.8' stroke-opacity='0.12' stroke-dasharray='2,2'/%3E%3Ccircle cx='48' cy='48' r='9' fill='none' stroke='%230c4a7e' stroke-width='1.2' stroke-opacity='0.16'/%3E%3Ccircle cx='48' cy='48' r='2.8' fill='%230c4a7e' fill-opacity='0.22'/%3E%3Cpath d='M48,32 Q51.5,41 48,44 Q44.5,41 48,32 Z' fill='%230c4a7e' fill-opacity='0.18'/%3E%3Cpath d='M48,64 Q51.5,55 48,52 Q44.5,55 48,64 Z' fill='%230c4a7e' fill-opacity='0.18'/%3E%3Cpath d='M32,48 Q41,51.5 44,48 Q41,44.5 32,48 Z' fill='%230c4a7e' fill-opacity='0.18'/%3E%3Cpath d='M64,48 Q55,51.5 52,48 Q55,44.5 64,48 Z' fill='%230c4a7e' fill-opacity='0.18'/%3E%3Ccircle cx='39' cy='39' r='1.2' fill='%230c4a7e' fill-opacity='0.16'/%3E%3Ccircle cx='57' cy='39' r='1.2' fill='%230c4a7e' fill-opacity='0.16'/%3E%3Ccircle cx='39' cy='57' r='1.2' fill='%230c4a7e' fill-opacity='0.16'/%3E%3Ccircle cx='57' cy='57' r='1.2' fill='%230c4a7e' fill-opacity='0.16'/%3E%3C/svg%3E");
+      background-size: 96px 96px;
+      background-repeat: repeat;
+    }
   </style>
 </head>
 <body class="bg-surface text-on-surface antialiased overflow-hidden h-screen flex">
@@ -134,8 +142,9 @@
   </div>
 
   <!-- Table -->
-  <div class="flex-1 overflow-auto px-6 py-4">
-    <table class="w-full border-collapse">
+  <div class="flex-1 overflow-auto px-6 py-4 delft-tile-bg">
+    <div class="bg-white/95 backdrop-blur-xs rounded-2xl shadow-sm border border-outline-variant p-4">
+      <table class="w-full border-collapse">
       <thead>
         <tr class="border-b border-outline-variant">
           <th class="text-left py-3 px-4 text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Produk</th>
@@ -151,6 +160,7 @@
         <!-- Rendered by JS -->
       </tbody>
     </table>
+    </div>
   </div>
 </main>
 
