@@ -95,6 +95,11 @@
       <span class="material-symbols-outlined filled text-xl">point_of_sale</span>
       <span class="text-[10px] font-semibold">Kasir</span>
     </a>
+    <a href="meja.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer relative transition-colors" title="Denah & Display Meja">
+      <span class="material-symbols-outlined text-xl">table_restaurant</span>
+      <span class="text-[10px] font-medium">Denah Meja</span>
+      <span id="sidebar-cleaning-badge" class="hidden absolute top-1 right-2 bg-amber-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+    </a>
     <a href="katalog.html" class="nav-item w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
       <span class="material-symbols-outlined text-xl">grid_view</span>
       <span class="text-[10px] font-medium">Katalog</span>
@@ -142,6 +147,14 @@
       </div>
     </div>
     <div class="ml-auto flex items-center gap-3">
+      <!-- Shortcut Denah Meja -->
+      <a href="meja.html" title="Buka Denah & Display Meja Kafe"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
+        <span class="material-symbols-outlined text-base text-primary">table_restaurant</span>
+        <span class="hidden md:inline">Denah Meja</span>
+        <span id="header-cleaning-badge" class="hidden px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px] font-bold animate-pulse">0</span>
+      </a>
+      <div class="w-px h-8 bg-outline-variant"></div>
       <a href="menu.html" target="_blank" title="Buka Tampilan Menu Smartphone Pelanggan"
         class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-all">
         <span class="material-symbols-outlined text-base">smartphone</span>
@@ -165,40 +178,6 @@
 
     <!-- ══ LEFT: PRODUCT CATALOG (65%) ══ -->
     <section class="flex-1 flex flex-col overflow-hidden">
-      <!-- ─── LIVE TABLE STATUS DISPLAY BAR ─── -->
-      <div class="px-6 py-2 bg-surface-container-low border-b border-outline-variant flex items-center justify-between gap-3 shrink-0">
-        <div class="flex items-center gap-2.5">
-          <div class="flex items-center gap-1.5 font-bold text-xs text-on-surface">
-            <span class="material-symbols-outlined text-primary text-base">table_restaurant</span>
-            <span>Display Meja:</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-[11px] font-semibold">
-            <span id="badge-table-occupied" class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 flex items-center gap-1 border border-blue-200">
-              <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              <span id="count-occupied-tables">0</span> Terpakai
-            </span>
-            <span id="badge-table-cleaning" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 flex items-center gap-1 border border-amber-300">
-              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-              <span id="count-cleaning-tables">0</span> Perlu Dibersihkan 🧹
-            </span>
-            <span id="badge-table-available" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 flex items-center gap-1 border border-emerald-200">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span id="count-available-tables">0</span> Kosong
-            </span>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5">
-          <div id="quick-tables-list" class="flex items-center gap-1.5">
-            <!-- Rendered by JS -->
-          </div>
-          <button onclick="openTableManagerModal()" class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white hover:bg-surface-container text-primary font-bold text-xs border border-outline-variant shadow-2xs transition-all whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">dashboard_customize</span>
-            <span>Denah & Kelola Meja</span>
-          </button>
-        </div>
-      </div>
-
       <!-- Category Filter with 3D Icons -->
       <div class="px-6 py-2.5 flex items-center gap-2 shrink-0 overflow-x-auto">
         <button onclick="filterCategory('all')" data-cat="all" class="cat-btn px-4 py-1.5 rounded-full bg-primary text-white font-bold text-xs flex items-center gap-2 whitespace-nowrap shadow-sm border border-primary transition-all">
@@ -419,78 +398,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ TABLE MANAGER MODAL -->
-<div id="table-manager-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
-  <div class="modal-overlay absolute inset-0 bg-black/40 backdrop-blur-xs" onclick="closeTableManagerModal()"></div>
-  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden flex flex-col max-h-[90vh]">
-    <!-- Header Modal -->
-    <div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low shrink-0">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-2xl">table_restaurant</span>
-        </div>
-        <div>
-          <h2 class="text-base font-bold text-on-surface">Denah & Manajemen Meja Kafe</h2>
-          <p class="text-xs text-on-surface-variant">Pantau meja yang sedang dipakai dan kelola meja yang perlu dibersihkan pegawai</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="renderTableFloorPlan()" class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container transition-colors" title="Segarkan Data Meja">
-          <span class="material-symbols-outlined text-lg">refresh</span>
-        </button>
-        <button onclick="closeTableManagerModal()" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-          <span class="material-symbols-outlined text-lg">close</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Filter & Summary Bar -->
-    <div class="px-6 py-3 border-b border-outline-variant flex items-center justify-between gap-3 bg-white shrink-0 overflow-x-auto">
-      <div class="flex items-center gap-1.5" id="table-filter-tabs">
-        <button onclick="filterTablePlan('all')" data-tfilter="all" class="table-plan-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-primary text-white shadow-2xs transition-all">
-          Semua (<span id="tab-cnt-all">7</span>)
-        </button>
-        <button onclick="filterTablePlan('occupied')" data-tfilter="occupied" class="table-plan-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center gap-1.5 transition-all">
-          <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-          <span>Terpakai (<span id="tab-cnt-occupied">0</span>)</span>
-        </button>
-        <button onclick="filterTablePlan('cleaning')" data-tfilter="cleaning" class="table-plan-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center gap-1.5 transition-all">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-          <span>Perlu Dibersihkan (<span id="tab-cnt-cleaning">0</span>) 🧹</span>
-        </button>
-        <button onclick="filterTablePlan('available')" data-tfilter="available" class="table-plan-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center gap-1.5 transition-all">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Kosong (<span id="tab-cnt-available">0</span>)</span>
-        </button>
-      </div>
-
-      <button onclick="markAllCleaned()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1.5 shrink-0 transition-all">
-        <span class="material-symbols-outlined text-sm">cleaning_services</span>
-        <span>Tandai Semua Bersih</span>
-      </button>
-    </div>
-
-    <!-- 2D Floor Plan Grid -->
-    <div class="flex-1 overflow-y-auto p-6 bg-[#f8fafc]">
-      <div id="table-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <!-- Rendered dynamically via JS -->
-      </div>
-    </div>
-
-    <!-- Modal Footer -->
-    <div class="px-6 py-3 border-t border-outline-variant bg-surface-container-low flex items-center justify-between text-xs text-on-surface-variant shrink-0">
-      <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Kosong: Siap Pakai</span>
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600 inline-block"></span> Terpakai: Ada Tamu</span>
-        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Perlu Dibersihkan: Tamu Selesai 🧹</span>
-      </div>
-      <button onclick="closeTableManagerModal()" class="px-4 py-1.5 rounded-xl bg-white border border-outline-variant font-bold text-on-surface hover:bg-surface-container transition-all">
-        Tutup
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════════════════════════════════════════════ TOAST NOTIFICATION -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none z-[100]">
   <div id="toast-inner" class="px-5 py-3 rounded-2xl shadow-xl text-white font-semibold text-label-lg flex items-center gap-2 min-w-64 justify-center"></div>
@@ -525,25 +432,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('storage', (e) => {
     if (e.key === 'pos_orders') updatePendingOrdersBadge();
-    if (e.key === 'pos_tables') renderTableStatusBar();
+    if (e.key === 'pos_tables') {
+      updateTableBadges();
+      populateOrderTableSelect();
+    }
   });
   window.addEventListener('pos_orders_updated', () => {
     updatePendingOrdersBadge();
-    renderTableStatusBar();
+    updateTableBadges();
   });
   window.addEventListener('pos_tables_updated', () => {
-    renderTableStatusBar();
-    if (!document.getElementById('table-manager-modal').classList.contains('hidden')) {
-      renderTableFloorPlan(currentTableFilter);
-    }
+    updateTableBadges();
+    populateOrderTableSelect();
   });
   window.addEventListener('pos_order_created', () => {
     updatePendingOrdersBadge();
-    renderTableStatusBar();
+    updateTableBadges();
+    populateOrderTableSelect();
   });
   setInterval(() => {
     updatePendingOrdersBadge();
-    renderTableStatusBar();
+    updateTableBadges();
   }, 3000);
 
   document.getElementById('search-input').addEventListener('input', (e) => {
@@ -951,63 +860,49 @@ function formatRp(amount) {
 }
 
 // ═══════════════════════════════════════════════════════ TABLE MANAGEMENT LOGIC
-let currentTableFilter = 'all';
-
 function initTableManagement() {
-  renderTableStatusBar();
+  updateTableBadges();
   populateOrderTableSelect();
+
+  // Handle meja yang dipilih dari halaman denah meja (meja.html)
+  const preselected = localStorage.getItem('pos_preselected_table');
+  if (preselected) {
+    const select = document.getElementById('order-table-select');
+    if (select) {
+      select.value = preselected;
+      showToast(`Meja ${preselected} dipilih dari denah! Silakan tambahkan item menu.`, 'info');
+    }
+    localStorage.removeItem('pos_preselected_table');
+  }
+}
+
+function updateTableBadges() {
+  const tables = DB.getTables();
+  const cleaningCount = tables.filter(t => t.status === 'cleaning').length;
+
+  const sidebarBadge = document.getElementById('sidebar-cleaning-badge');
+  if (sidebarBadge) {
+    if (cleaningCount > 0) {
+      sidebarBadge.textContent = cleaningCount;
+      sidebarBadge.classList.remove('hidden');
+    } else {
+      sidebarBadge.classList.add('hidden');
+    }
+  }
+
+  const headerBadge = document.getElementById('header-cleaning-badge');
+  if (headerBadge) {
+    if (cleaningCount > 0) {
+      headerBadge.textContent = `${cleaningCount} Meja Perlu Dibersihkan 🧹`;
+      headerBadge.classList.remove('hidden');
+    } else {
+      headerBadge.classList.add('hidden');
+    }
+  }
 }
 
 function renderTableStatusBar() {
-  const tables = DB.getTables();
-  const occupiedCount = tables.filter(t => t.status === 'occupied').length;
-  const cleaningCount = tables.filter(t => t.status === 'cleaning').length;
-  const availableCount = tables.filter(t => t.status === 'available').length;
-
-  const occEl = document.getElementById('count-occupied-tables');
-  const cleanEl = document.getElementById('count-cleaning-tables');
-  const availEl = document.getElementById('count-available-tables');
-  if (occEl) occEl.textContent = occupiedCount;
-  if (cleanEl) cleanEl.textContent = cleaningCount;
-  if (availEl) availEl.textContent = availableCount;
-
-  // Render Horizontal Quick Table Chips
-  const container = document.getElementById('quick-tables-list');
-  if (!container) return;
-
-  container.innerHTML = tables.map(t => {
-    if (t.status === 'occupied') {
-      const custPart = t.customer_name ? `<span class="text-[10px] font-normal opacity-80 truncate max-w-16">· ${t.customer_name}</span>` : '';
-      return `
-        <button onclick="openTableManagerModal('occupied')"
-          class="px-2.5 py-1 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs shrink-0"
-          title="${t.name}: Sedang Terpakai (${t.customer_name || 'Ada tamu'})">
-          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-          <span>${t.name}</span>
-          ${custPart}
-        </button>
-      `;
-    } else if (t.status === 'cleaning') {
-      return `
-        <button onclick="setTableCleaned('${t.name}')"
-          class="px-2.5 py-1 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 border border-amber-400 text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs ring-1 ring-amber-300 animate-pulse shrink-0"
-          title="Klik: Selesai Dibersihkan!">
-          <span class="material-symbols-outlined text-sm text-amber-900">cleaning_services</span>
-          <span>${t.name}: Bersihkan! 🧹</span>
-        </button>
-      `;
-    } else {
-      return `
-        <button onclick="selectTableForCurrentOrder('${t.name}')"
-          class="px-2.5 py-1 rounded-xl bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs shrink-0"
-          title="${t.name}: Kosong (Klik untuk pilih ke pesanan)">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>${t.name}</span>
-        </button>
-      `;
-    }
-  }).join('');
-
+  updateTableBadges();
   populateOrderTableSelect();
 }
 
@@ -1037,198 +932,6 @@ function populateOrderTableSelect() {
   select.innerHTML = optionsHtml;
   if ([...select.options].some(o => o.value === currentVal)) {
     select.value = currentVal;
-  }
-}
-
-function openTableManagerModal(filter = 'all') {
-  currentTableFilter = filter;
-  renderTableFloorPlan(filter);
-  document.getElementById('table-manager-modal').classList.remove('hidden');
-}
-
-function closeTableManagerModal() {
-  document.getElementById('table-manager-modal').classList.add('hidden');
-}
-
-function filterTablePlan(status) {
-  currentTableFilter = status;
-  renderTableFloorPlan(status);
-}
-
-function renderTableFloorPlan(filter = 'all') {
-  const tables = DB.getTables();
-  const occCount = tables.filter(t => t.status === 'occupied').length;
-  const cleanCount = tables.filter(t => t.status === 'cleaning').length;
-  const availCount = tables.filter(t => t.status === 'available').length;
-
-  const tabAll = document.getElementById('tab-cnt-all');
-  const tabOcc = document.getElementById('tab-cnt-occupied');
-  const tabClean = document.getElementById('tab-cnt-cleaning');
-  const tabAvail = document.getElementById('tab-cnt-available');
-  if (tabAll) tabAll.textContent = tables.length;
-  if (tabOcc) tabOcc.textContent = occCount;
-  if (tabClean) tabClean.textContent = cleanCount;
-  if (tabAvail) tabAvail.textContent = availCount;
-
-  // Update Tab Styling
-  document.querySelectorAll('.table-plan-tab').forEach(btn => {
-    if (btn.dataset.tfilter === filter) {
-      btn.className = 'table-plan-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-primary text-white shadow-2xs transition-all';
-    } else {
-      btn.className = 'table-plan-tab px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center gap-1.5 transition-all';
-    }
-  });
-
-  const filtered = filter === 'all' ? tables : tables.filter(t => t.status === filter);
-  const grid = document.getElementById('table-cards-grid');
-
-  if (!filtered.length) {
-    grid.innerHTML = `
-      <div class="col-span-full py-16 text-center text-on-surface-variant flex flex-col items-center gap-2">
-        <span class="material-symbols-outlined text-4xl opacity-30">table_restaurant</span>
-        <p class="text-xs font-semibold">Tidak ada meja dengan status ini.</p>
-      </div>
-    `;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(t => {
-    let cardStyle = '';
-    let badge = '';
-    let actions = '';
-    let details = '';
-
-    if (t.status === 'occupied') {
-      cardStyle = 'border-2 border-blue-400 bg-blue-50/40 ring-1 ring-blue-300/30';
-      badge = `<span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 text-[11px] font-extrabold flex items-center gap-1">
-                 <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                 <span>Terpakai</span>
-               </span>`;
-      details = `
-        <div class="bg-white/90 rounded-xl p-2.5 border border-blue-200 text-xs flex flex-col gap-1">
-          <p class="font-bold text-on-surface truncate">👤 ${t.customer_name || 'Pelanggan'}</p>
-          <div class="flex items-center justify-between text-[11px] text-on-surface-variant">
-            <span>Dimulai: ${t.updated_at || 'Hari ini'}</span>
-            <span class="font-mono text-primary font-bold">${t.order_id || 'Aktif'}</span>
-          </div>
-        </div>
-      `;
-      actions = `
-        <button onclick="setTableCleaning('${t.name}')"
-          class="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-base">cleaning_services</span>
-          <span>Pelanggan Selesai (Perlu Bersihkan 🧹)</span>
-        </button>
-      `;
-    } else if (t.status === 'cleaning') {
-      cardStyle = 'border-2 border-amber-400 bg-amber-50/80 ring-2 ring-amber-300/40 animate-pulse';
-      badge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-950 text-[11px] font-extrabold flex items-center gap-1">
-                 <span class="material-symbols-outlined text-sm text-amber-900">cleaning_services</span>
-                 <span>Perlu Dibersihkan</span>
-               </span>`;
-      details = `
-        <div class="bg-white/90 rounded-xl p-2.5 border border-amber-300 text-xs flex flex-col gap-1">
-          <p class="font-bold text-amber-950">🧹 Tamu selesai menggunakan meja ini.</p>
-          <p class="text-[11px] text-amber-800">Meja kotor dan menunggu dibersihkan pegawai kafe.</p>
-        </div>
-      `;
-      actions = `
-        <button onclick="setTableCleaned('${t.name}')"
-          class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-base">check_circle</span>
-          <span>✨ Selesai Dibersihkan (Setel Siap Pakai)</span>
-        </button>
-      `;
-    } else {
-      cardStyle = 'border border-outline-variant bg-white hover:border-emerald-400 hover:shadow-sm';
-      badge = `<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center gap-1">
-                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                 <span>Siap Digunakan</span>
-               </span>`;
-      details = `
-        <div class="bg-surface-container-low rounded-xl p-2.5 text-xs text-on-surface-variant flex items-center justify-between">
-          <span>Kapasitas</span>
-          <span class="font-bold text-on-surface">${t.capacity} Kursi</span>
-        </div>
-      `;
-      actions = `
-        <div class="flex gap-2">
-          <button onclick="selectTableForCurrentOrder('${t.name}')"
-            class="flex-1 py-1.5 px-2 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs flex items-center justify-center gap-1 shadow-2xs transition-all">
-            <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
-            <span>Pilih Meja</span>
-          </button>
-          <button onclick="promptManualOccupied('${t.name}')"
-            class="px-2.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant text-xs font-semibold" title="Tandai Terpakai Manual">
-            <span>Duduki</span>
-          </button>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="rounded-2xl p-4 flex flex-col justify-between gap-3 transition-all ${cardStyle}">
-        <div>
-          <div class="flex items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold">
-                <span class="material-symbols-outlined text-lg">${t.name.includes('VIP') ? 'workspace_premium' : 'table_restaurant'}</span>
-              </span>
-              <h3 class="text-sm font-extrabold text-on-surface">${t.name}</h3>
-            </div>
-            ${badge}
-          </div>
-          ${details}
-        </div>
-        ${actions}
-      </div>
-    `;
-  }).join('');
-}
-
-function setTableCleaning(tableName) {
-  DB.markTableCleaning(tableName);
-  renderTableStatusBar();
-  renderTableFloorPlan(currentTableFilter);
-  showToast(`Meja ${tableName} ditandai perlu dibersihkan pegawai 🧹`, 'info');
-}
-
-function setTableCleaned(tableName) {
-  DB.markTableCleaned(tableName);
-  renderTableStatusBar();
-  renderTableFloorPlan(currentTableFilter);
-  showToast(`Meja ${tableName} telah dibersihkan dan siap digunakan ✨`, 'success');
-}
-
-function markAllCleaned() {
-  const tables = DB.getTables();
-  const cleaningTables = tables.filter(t => t.status === 'cleaning');
-  if (cleaningTables.length === 0) {
-    showToast('Tidak ada meja yang sedang perlu dibersihkan.', 'info');
-    return;
-  }
-  cleaningTables.forEach(t => DB.markTableCleaned(t.name));
-  renderTableStatusBar();
-  renderTableFloorPlan(currentTableFilter);
-  showToast(`Semua meja (${cleaningTables.length}) telah disetel bersih dan siap pakai ✨`, 'success');
-}
-
-function selectTableForCurrentOrder(tableName) {
-  const select = document.getElementById('order-table-select');
-  if (select) {
-    select.value = tableName;
-  }
-  closeTableManagerModal();
-  showToast(`${tableName} dipilih untuk pesanan saat ini ☕`, 'info');
-}
-
-function promptManualOccupied(tableName) {
-  const name = prompt(`Masukkan nama pelanggan untuk ${tableName}:`, 'Tamu Meja');
-  if (name !== null) {
-    DB.updateTableStatus(tableName, 'occupied', name.trim() || 'Tamu Meja');
-    renderTableStatusBar();
-    renderTableFloorPlan(currentTableFilter);
-    showToast(`${tableName} sekarang berstatus terpakai oleh ${name}.`, 'info');
   }
 }
 </script>

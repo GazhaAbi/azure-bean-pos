@@ -31,13 +31,13 @@ const INITIAL_USERS = [
 ];
 
 const INITIAL_TABLES = [
-  { id: "T-01", name: "Meja 01", capacity: 2, status: "available", order_id: null, customer_name: null, updated_at: null },
-  { id: "T-02", name: "Meja 02", capacity: 2, status: "available", order_id: null, customer_name: null, updated_at: null },
-  { id: "T-03", name: "Meja 03", capacity: 4, status: "occupied",  order_id: "ORD-0001", customer_name: "Budi Santoso", updated_at: "09:15" },
-  { id: "T-04", name: "Meja 04", capacity: 4, status: "available", order_id: null, customer_name: null, updated_at: null },
-  { id: "T-05", name: "Meja 05", capacity: 4, status: "occupied",  order_id: "ORD-0002", customer_name: "Sarah", updated_at: "10:20" },
-  { id: "T-06", name: "Meja 06", capacity: 6, status: "cleaning",  order_id: null, customer_name: null, updated_at: "11:00" },
-  { id: "T-VIP", name: "Meja VIP", capacity: 8, status: "available", order_id: null, customer_name: null, updated_at: null }
+  { id: "T-01", name: "Meja 01", capacity: 2, shape: "round", zone: "Area Jendela", status: "available", order_id: null, customer_name: null, updated_at: null },
+  { id: "T-02", name: "Meja 02", capacity: 2, shape: "round", zone: "Area Jendela", status: "available", order_id: null, customer_name: null, updated_at: null },
+  { id: "T-03", name: "Meja 03", capacity: 4, shape: "rect", zone: "Area Tengah", status: "occupied",  order_id: "ORD-0001", customer_name: "Budi Santoso", updated_at: "09:15" },
+  { id: "T-04", name: "Meja 04", capacity: 4, shape: "rect", zone: "Area Tengah", status: "available", order_id: null, customer_name: null, updated_at: null },
+  { id: "T-05", name: "Meja 05", capacity: 4, shape: "rect", zone: "Area Tengah", status: "occupied",  order_id: "ORD-0002", customer_name: "Sarah", updated_at: "10:20" },
+  { id: "T-06", name: "Meja 06", capacity: 6, shape: "long-rect", zone: "Area Komunal", status: "cleaning",  order_id: null, customer_name: null, updated_at: "11:00" },
+  { id: "T-VIP", name: "Meja VIP", capacity: 8, shape: "sofa", zone: "Lounge VIP", status: "available", order_id: null, customer_name: null, updated_at: null }
 ];
 
 const INITIAL_ORDERS = [
@@ -442,7 +442,11 @@ class JsonDatabaseManager {
     if (!localStorage.getItem('pos_tables')) {
       localStorage.setItem('pos_tables', JSON.stringify(INITIAL_TABLES));
     }
-    return JSON.parse(localStorage.getItem('pos_tables') || '[]');
+    const stored = JSON.parse(localStorage.getItem('pos_tables') || '[]');
+    return stored.map(s => {
+      const init = INITIAL_TABLES.find(i => i.id === s.id || (s.name && i.name.toLowerCase() === s.name.toLowerCase())) || {};
+      return { ...init, ...s };
+    });
   }
 
   getTableByName(name) {

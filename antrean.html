@@ -79,6 +79,11 @@
       <span class="material-symbols-outlined text-xl">point_of_sale</span>
       <span class="text-[10px] font-medium">Kasir</span>
     </a>
+    <a href="meja.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer relative" title="Denah & Display Meja">
+      <span class="material-symbols-outlined text-xl">table_restaurant</span>
+      <span class="text-[10px] font-medium">Meja</span>
+      <span id="sidebar-cleaning-badge" class="hidden absolute top-1 right-2 bg-amber-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+    </a>
     <a href="katalog.html" class="w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-2xl text-on-surface-variant hover:bg-surface-container cursor-pointer">
       <span class="material-symbols-outlined text-xl">grid_view</span>
       <span class="text-[10px] font-medium">Katalog</span>
@@ -553,6 +558,17 @@ function updateCounters(orders) {
     sideBadge.classList.remove('hidden');
   } else {
     sideBadge.classList.add('hidden');
+  }
+
+  const cleaningCount = DB.getTables ? DB.getTables().filter(t => t.status === 'cleaning').length : 0;
+  const cleanBadge = document.getElementById('sidebar-cleaning-badge');
+  if (cleanBadge) {
+    if (cleaningCount > 0) {
+      cleanBadge.textContent = cleaningCount;
+      cleanBadge.classList.remove('hidden');
+    } else {
+      cleanBadge.classList.add('hidden');
+    }
   }
 }
 
